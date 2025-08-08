@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebaseAdmin';
 
+type Status = 'Pending' | 'Approved' | 'Rejected';
 type Idea = {
-  id?: string;                       // 있으면 해당 id로 upsert
+  id?: string;
   title: string;
   summary?: string;
   category?: string;
@@ -11,10 +12,9 @@ type Idea = {
   koreaFitScore?: number;
   sourceURL?: string;
   sourcePlatform?: string;
-  uploadedAt?: string | number;      // ISO or epoch
+  uploadedAt?: string | number;
   adminReview?: string;
-  status?: 'Pending' | 'Approved' | 'Rejected';
-  // 연결 메타데이터 (선택)
+  status?: Status;
   tags?: string[];
   useCases?: string[];
   techStack?: string[];
@@ -40,25 +40,20 @@ function normalizeIdea(raw: any): Idea {
     sourcePlatform: raw.sourcePlatform ? String(raw.sourcePlatform) : '',
     uploadedAt: raw.uploadedAt || now,
     adminReview: raw.adminReview ? String(raw.adminReview) : '',
-    status: (raw.status as Idea['status']) || 'Pending',
+    status: (raw.status as Status) || 'Pending',
     tags: Array.isArray(raw.tags) ? raw.tags.slice(0, 10).map(String) : undefined,
     useCases: Array.isArray(raw.useCases) ? raw.useCases.slice(0, 10).map(String) : undefined,
     techStack: Array.isArray(raw.techStack) ? raw.techStack.slice(0, 10).map(String) : undefined,
   };
-
-  if (!n.title) {
-    throw new Error('title is required');
-  }
+  if (!n.title) throw new Error('title is required');
   return n;
 }
 
 async function upsertOne(idea: Idea) {
-  // 우선순위: 명시 id → sourceURL 중복 검사 → 새 doc
   if (idea.id) {
     await adminDb.collection('ideas').doc(idea.id).set(idea, { merge: true });
     return { id: idea.id, mode: 'byId' as const };
   }
-
   if (idea.sourceURL) {
     const q = await adminDb.collection('ideas').where('sourceURL', '==', idea.sourceURL).limit(1).get();
     if (!q.empty) {
@@ -67,32 +62,21 @@ async function upsertOne(idea: Idea) {
       return { id: doc.id, mode: 'bySourceURL' as const };
     }
   }
-
   const docRef = await adminDb.collection('ideas').add(idea);
   return { id: docRef.id, mode: 'new' as const };
 }
 
 export async function POST(req: Request) {
   try {
-    // Check if Firebase Admin is initialized
-    if (!adminDb) {
-      return NextResponse.json({ error: 'Firebase Admin not initialized. Check environment variables.' }, { status: 500 });
-    }
-
-    if (!authOk(req)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    if (!authOk(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
     const items = Array.isArray(body) ? body : [body];
-
     const results = [];
     for (const raw of items) {
       const idea = normalizeIdea(raw);
       const r = await upsertOne(idea);
       results.push({ ...r, title: idea.title });
     }
-
     return NextResponse.json({ ok: true, count: results.length, results }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ ok: false, error: err?.message || 'unknown' }, { status: 400 });
