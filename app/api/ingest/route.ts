@@ -2,6 +2,10 @@
 import { NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 
+// 임시로 클라이언트 SDK도 import
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, setDoc, doc, query, where, getDocs } from "firebase/firestore";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -78,20 +82,51 @@ export async function POST(req: Request) {
       updatedAt: now,
     };
 
-    const db = getAdminDb();
-    const ideas = db.collection("ideas");
+    // Admin SDK 시도
+    try {
+      const db = getAdminDb();
+      const ideas = db.collection("ideas");
+      const snap = await ideas.where("sourceURL", "==", normalizedURL).limit(1).get();
 
-    // sourceURL 기준 업서트
-    const snap = await ideas.where("sourceURL", "==", normalizedURL).limit(1).get();
-
-    if (snap.empty) {
-      payload.uploadedAt ||= now;
-      const ref = await ideas.add(payload);
-      return NextResponse.json({ ok: true, id: ref.id, action: "created" });
-    } else {
-      const ref = snap.docs[0].ref;
-      await ref.set(payload, { merge: true });
-      return NextResponse.json({ ok: true, id: ref.id, action: "updated" });
+      if (snap.empty) {
+        payload.uploadedAt ||= now;
+        const ref = await ideas.add(payload);
+        return NextResponse.json({ ok: true, id: ref.id, action: "created" });
+      } else {
+        const ref = snap.docs[0].ref;
+        await ref.set(payload, { merge: true });
+        return NextResponse.json({ ok: true, id: ref.id, action: "updated" });
+      }
+    } catch (adminError: any) {
+      console.error('Admin SDK failed, trying client SDK:', adminError.message);
+      
+      // 클라이언트 SDK로 폴백
+      const firebaseConfig = {
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+      };
+      
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const ideasRef = collection(db, "ideas");
+      
+      // sourceURL 기준 검색
+      const q = query(ideasRef, where("sourceURL", "==", normalizedURL));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        payload.uploadedAt ||= now;
+        const docRef = await addDoc(ideasRef, payload);
+        return NextResponse.json({ ok: true, id: docRef.id, action: "created" });
+      } else {
+        const docRef = doc(db, "ideas", querySnapshot.docs[0].id);
+        await setDoc(docRef, payload, { merge: true });
+        return NextResponse.json({ ok: true, id: querySnapshot.docs[0].id, action: "updated" });
+      }
     }
   } catch (err: any) {
     console.error('INGEST_ERROR', err?.message);
