@@ -8,25 +8,67 @@ export default function Admin() {
   const [user, setUser] = useState(null);
   const [ideas, setIdeas] = useState([]);
   const [form, setForm] = useState({
-    title: "", summary: "", category: "", koreaFitScore: 3, sourcePlatform: "X", status: "Pending"
+    title: "",
+    summary: "",
+    category: "",
+    targetUser: "",
+    businessModel: "",
+    sourceURL: "",
+    sourcePlatform: "ideabrowser",
+    status: "Pending",
+    // KoreaFit detail parts
+    kfit: { regulatory: 1, infra: 1, behavior: 1, competition: 0 },
+    // Koreanization notes (3 bullets)
+    notes: ["", "", ""],
   });
 
   useEffect(() => onAuthStateChanged(auth, setUser), []);
   useEffect(() => {
     return onSnapshot(collection(db, "ideas"), (snap) => {
-      setIdeas(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // newest first
+      setIdeas(arr.sort((a,b) => (b?.uploadedAt?.seconds ?? 0) - (a?.uploadedAt?.seconds ?? 0)));
     });
   }, []);
 
-  if (!user) return <div>Admin 로그인 필요</div>;
-  if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAILS) return <div>권한 없음</div>;
+  if (!user) return <div className="text-center mt-8 font-semibold">Admin 로그인 필요</div>;
+  if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAILS) return <div className="text-center mt-8">권한 없음</div>;
+
+  function kfitTotal(k) {
+    // 0–2 (regulatory), 0–1 (infra), 0–1 (behavior), 0–1 (competition) => max 5
+    return Number(k.regulatory) + Number(k.infra) + Number(k.behavior) + Number(k.competition);
+  }
 
   async function createIdea() {
-    await addDoc(collection(db, "ideas"), {
-      ...form,
+    const koreaFitScore = kfitTotal(form.kfit);
+    const payload = {
+      title: form.title.trim(),
+      summary: form.summary.trim(),
+      category: form.category || "",
+      targetUser: form.targetUser || "",
+      businessModel: form.businessModel || "",
+      sourceURL: form.sourceURL || "",
+      sourcePlatform: form.sourcePlatform,
       uploadedAt: serverTimestamp(),
+      adminReview: "", // optional legacy
+      status: form.status,
+      // new fields
+      koreaFitDetail: {
+        regulatory: Number(form.kfit.regulatory),
+        infra: Number(form.kfit.infra),
+        behavior: Number(form.kfit.behavior),
+        competition: Number(form.kfit.competition),
+      },
+      koreaFitScore,
+      koreanizationNotes: form.notes.map(s => (s || "").trim()).slice(0,3),
+      signals: { bookmarks: 0, last7dDelta: 0 }, // updated later by automation
+    };
+    await addDoc(collection(db, "ideas"), payload);
+    setForm({
+      ...form,
+      title: "", summary: "", sourceURL: "",
+      notes: ["", "", ""],
     });
-    setForm({ title: "", summary: "", category: "", koreaFitScore: 3, sourcePlatform: "X", status: "Pending" });
   }
 
   async function patchIdea(id, changes) {
@@ -35,81 +77,103 @@ export default function Admin() {
 
   return (
     <div className="grid gap-6">
-      <section className="p-4 border rounded-lg">
+      <section className="p-4 border rounded-lg max-w-2xl mx-auto">
         <h2 className="font-semibold mb-3">새 아이디어 등록</h2>
-        <div className="grid gap-3">
-          <input 
-            placeholder="제목" 
-            value={form.title} 
-            onChange={e => setForm({ ...form, title: e.target.value })}
-            className="px-3 py-2 border rounded-lg"
-          />
-          <textarea 
-            placeholder="요약" 
-            value={form.summary} 
-            onChange={e => setForm({ ...form, summary: e.target.value })}
-            className="px-3 py-2 border rounded-lg h-24"
-          />
-          <div className="flex gap-2">
-            <select 
-              value={form.category} 
-              onChange={e => setForm({ ...form, category: e.target.value })}
-              className="px-3 py-2 border rounded-lg"
-            >
-              <option value="">카테고리 선택</option>
-              <option value="tech">기술</option>
-              <option value="health">헬스</option>
-              <option value="finance">금융</option>
-              <option value="education">교육</option>
-              <option value="lifestyle">라이프스타일</option>
+        <div className="grid gap-2">
+          <input className="px-3 py-2 rounded-lg border" placeholder="제목" value={form.title} onChange={e=>setForm({...form, title:e.target.value})}/>
+          <textarea className="px-3 py-2 rounded-lg border" placeholder="요약" value={form.summary} onChange={e=>setForm({...form, summary:e.target.value})}/>
+          <div className="grid grid-cols-2 gap-2">
+            <input className="px-3 py-2 rounded-lg border" placeholder="카테고리" value={form.category} onChange={e=>setForm({...form, category:e.target.value})}/>
+            <input className="px-3 py-2 rounded-lg border" placeholder="Target User" value={form.targetUser} onChange={e=>setForm({...form, targetUser:e.target.value})}/>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <select className="px-3 py-2 rounded-lg border" value={form.businessModel} onChange={e=>setForm({...form, businessModel:e.target.value})}>
+              <option value="">Business Model</option>
+              <option value="B2B SaaS">B2B SaaS</option>
+              <option value="B2C">B2C</option>
+              <option value="Marketplace">Marketplace</option>
+              <option value="Platform">Platform</option>
+              <option value="Fintech">Fintech</option>
             </select>
-            <select 
-              value={form.koreaFitScore} 
-              onChange={e => setForm({ ...form, koreaFitScore: parseInt(e.target.value) })}
-              className="px-3 py-2 border rounded-lg"
-            >
-              <option value={1}>Korea Fit: 1</option>
-              <option value={2}>Korea Fit: 2</option>
-              <option value={3}>Korea Fit: 3</option>
-              <option value={4}>Korea Fit: 4</option>
-              <option value={5}>Korea Fit: 5</option>
+            <select className="px-3 py-2 rounded-lg border" value={form.sourcePlatform} onChange={e=>setForm({...form, sourcePlatform:e.target.value})}>
+              <option>ideabrowser</option>
+              <option>X</option>
+              <option>Hacker News</option>
+              <option>Reddit</option>
+              <option>YC</option>
             </select>
           </div>
-          <button 
-            onClick={createIdea}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            등록
-          </button>
+          <input className="px-3 py-2 rounded-lg border" placeholder="원본 URL" value={form.sourceURL} onChange={e=>setForm({...form, sourceURL:e.target.value})}/>
+
+          <div className="grid grid-cols-4 gap-2 mt-2">
+            <div>
+              <div className="text-xs mb-1">Regulatory (0-2)</div>
+              <select className="px-2 py-2 rounded-lg border" value={form.kfit.regulatory} onChange={e=>setForm({...form, kfit:{...form.kfit, regulatory:e.target.value}})}>
+                {[0,1,2].map(n=><option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div>
+              <div className="text-xs mb-1">Infra (0-1)</div>
+              <select className="px-2 py-2 rounded-lg border" value={form.kfit.infra} onChange={e=>setForm({...form, kfit:{...form.kfit, infra:e.target.value}})}>
+                {[0,1].map(n=><option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div>
+              <div className="text-xs mb-1">Behavior (0-1)</div>
+              <select className="px-2 py-2 rounded-lg border" value={form.kfit.behavior} onChange={e=>setForm({...form, kfit:{...form.kfit, behavior:e.target.value}})}>
+                {[0,1].map(n=><option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div>
+              <div className="text-xs mb-1">Competition (0-1)</div>
+              <select className="px-2 py-2 rounded-lg border" value={form.kfit.competition} onChange={e=>setForm({...form, kfit:{...form.kfit, competition:e.target.value}})}>
+                {[0,1].map(n=><option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid gap-2 mt-2">
+            <div className="text-sm font-medium">한국화 노트 (3줄)</div>
+            {form.notes.map((v,idx)=>(
+              <input key={idx} className="px-3 py-2 rounded-lg border" placeholder={`노트 ${idx+1}`} value={v}
+                     onChange={e=>{
+                       const arr=[...form.notes]; arr[idx]=e.target.value; setForm({...form, notes:arr});
+                     }}/>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <select className="px-3 py-2 rounded-lg border" value={form.status} onChange={e=>setForm({...form, status:e.target.value})}>
+              {["Pending","Approved","Rejected"].map(s=><option key={s} value={s}>{s}</option>)}
+            </select>
+            <div className="px-3 py-2 rounded-lg border bg-gray-50">
+              Korea Fit: <b>{kfitTotal(form.kfit)}</b> / 5
+            </div>
+          </div>
+
+          <button onClick={createIdea} className="px-3 py-2 rounded-lg border bg-blue-600 text-white mt-2">등록</button>
         </div>
       </section>
 
-      <section className="grid gap-3">
-        <h2 className="font-semibold">아이디어 관리</h2>
+      <section className="grid gap-3 max-w-3xl mx-auto">
         {ideas.map(i => (
-          <div key={i.id} className="p-4 border rounded-lg">
-            <div className="flex justify-between items-start gap-4">
-              <div className="flex-1">
-                <div className="font-semibold">{i.title}</div>
-                <div className="text-sm text-zinc-600 mt-1">{i.summary}</div>
-                <div className="text-xs text-zinc-500 mt-2">
-                  Korea Fit: {i.koreaFitScore}/5 • {i.sourcePlatform} • {i.category}
-                </div>
+          <div key={i.id} className="p-4 border rounded-lg flex justify-between items-start">
+            <div>
+              <div className="font-semibold">{i.title}</div>
+              <div className="text-xs text-zinc-500 mt-1">
+                Source: {i.sourcePlatform || "-"} {i.sourceURL ? "• " : ""}{i.sourceURL && <a className="underline" href={i.sourceURL} target="_blank">원문</a>}
+                {" • "}Korea Fit {i.koreaFitScore ?? "-"} / 5
+                {" • "}최근7일: {i?.signals?.last7dDelta ?? 0 >= 0 ? "+" : ""}{i?.signals?.last7dDelta ?? 0}
               </div>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => patchIdea(i.id, { status: "Approved" })}
-                  className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                >
-                  승인
-                </button>
-                <button 
-                  onClick={() => patchIdea(i.id, { status: "Rejected" })}
-                  className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                >
-                  거절
-                </button>
-              </div>
+              {i.koreanizationNotes?.length ? (
+                <ul className="list-disc ml-5 mt-1 text-xs">
+                  {i.koreanizationNotes.filter(Boolean).map((n,ix)=><li key={ix}>{n}</li>)}
+                </ul>
+              ) : null}
+            </div>
+            <div className="flex gap-2">
+              <button onClick={()=>patchIdea(i.id, { status: "Approved" })} className="px-3 py-1 rounded-lg border">승인</button>
+              <button onClick={()=>patchIdea(i.id, { status: "Rejected" })} className="px-3 py-1 rounded-lg border">거절</button>
             </div>
           </div>
         ))}
