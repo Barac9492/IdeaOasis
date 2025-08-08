@@ -1,6 +1,6 @@
 'use client';
 import Link from "next/link";
-import { auth, provider } from "@/lib/firebase";
+import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 
@@ -20,7 +20,7 @@ export default function Nav() {
         {user ? (
           <button onClick={() => signOut(auth)}>Sign out</button>
         ) : (
-          <button onClick={() => signInWithPopup(auth, provider)}>Sign in</button>
+                          <button onClick={() => signInWithPopup(auth, googleProvider)}>Sign in</button>
         )}
       </div>
     </nav>

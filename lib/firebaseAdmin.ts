@@ -2,7 +2,7 @@ import { getApps, initializeApp, cert, App } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
 let app: App | null = null;
-let db: any = null;
+let adminDb: any = null;
 
 function initializeFirebaseAdmin() {
   if (!getApps().length) {
@@ -15,11 +15,7 @@ function initializeFirebaseAdmin() {
     }
 
     app = initializeApp({
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
+      credential: cert({ projectId, clientEmail, privateKey }),
     });
   } else {
     app = getApps()[0]!;
@@ -30,7 +26,7 @@ function initializeFirebaseAdmin() {
 
 // Initialize only if environment variables are available
 if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
-  db = initializeFirebaseAdmin();
+  adminDb = initializeFirebaseAdmin();
 }
 
-export { db };
+export { adminDb };

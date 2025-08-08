@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebaseAdmin';
+import { adminDb } from '@/lib/firebaseAdmin';
 
 type Idea = {
   id?: string;                       // 있으면 해당 id로 upsert
@@ -55,12 +55,12 @@ function normalizeIdea(raw: any): Idea {
 async function upsertOne(idea: Idea) {
   // 우선순위: 명시 id → sourceURL 중복 검사 → 새 doc
   if (idea.id) {
-    await db.collection('ideas').doc(idea.id).set(idea, { merge: true });
+    await adminDb.collection('ideas').doc(idea.id).set(idea, { merge: true });
     return { id: idea.id, mode: 'byId' as const };
   }
 
   if (idea.sourceURL) {
-    const q = await db.collection('ideas').where('sourceURL', '==', idea.sourceURL).limit(1).get();
+    const q = await adminDb.collection('ideas').where('sourceURL', '==', idea.sourceURL).limit(1).get();
     if (!q.empty) {
       const doc = q.docs[0];
       await doc.ref.set(idea, { merge: true });
@@ -68,14 +68,14 @@ async function upsertOne(idea: Idea) {
     }
   }
 
-  const docRef = await db.collection('ideas').add(idea);
+  const docRef = await adminDb.collection('ideas').add(idea);
   return { id: docRef.id, mode: 'new' as const };
 }
 
 export async function POST(req: Request) {
   try {
     // Check if Firebase Admin is initialized
-    if (!db) {
+    if (!adminDb) {
       return NextResponse.json({ error: 'Firebase Admin not initialized. Check environment variables.' }, { status: 500 });
     }
 
