@@ -1,198 +1,253 @@
 'use client';
-import { useEffect, useState } from "react";
-import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, onSnapshot, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
-export default function Admin() {
+import { useEffect, useMemo, useState } from 'react';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { app as firebaseApp } from '../../lib/firebase'; // 상대경로! (lib/firebase.js)
+
+import BadgeInput from '../../components/BadgeInput';
+
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+const Section = ({ title, children }) => (
+  <div className="bg-white border rounded-xl p-6 shadow space-y-4">
+    <h3 className="font-semibold">{title}</h3>
+    {children}
+  </div>
+);
+
+const NumberInput = ({ label, value, onChange, min=0, max=10, step=1 }) => (
+  <div className="flex items-center gap-3">
+    <div className="w-40 text-sm">{label}</div>
+    <input type="range" min={min} max={max} step={step} value={value}
+      onChange={(e)=>onChange(Number(e.target.value))}
+      className="flex-1" />
+    <span className="w-10 text-right text-sm font-medium">{value}</span>
+  </div>
+);
+
+export default function AdminPage() {
   const [user, setUser] = useState(null);
-  const [ideas, setIdeas] = useState([]);
-  const [form, setForm] = useState({
-    title: "",
-    summary: "",
-    category: "",
-    targetUser: "",
-    businessModel: "",
-    sourceURL: "",
-    sourcePlatform: "ideabrowser",
-    status: "Pending",
-    // KoreaFit detail parts
-    kfit: { regulatory: 1, infra: 1, behavior: 1, competition: 0 },
-    // Koreanization notes (3 bullets)
-    notes: ["", "", ""],
-    // Connection metadata
-    tags: "",
-    useCases: "",
-    techStack: "",
+
+  // 기본 필드
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  const [category, setCategory] = useState('');
+  const [targetUser, setTargetUser] = useState('');
+  const [source, setSource] = useState('ideabrowser'); // origin/source
+  const [originUrl, setOriginUrl] = useState('');
+
+  // 새 확장 필드
+  const [heroImageUrl, setHeroImageUrl] = useState('');
+  const [badges, setBadges] = useState([]);                 // ["Perfect Timing", ...]
+  const [offer, setOffer] = useState('');                   // 핵심 한 줄
+  const [evidence, setEvidence] = useState({                // 검색 수요 등
+    keyword: '',
+    volume: '',
+    growthPct: '',
+    chartImg: ''
+  });
+  const [pricing, setPricing] = useState({                  // 과금 모델
+    model: 'subscription',
+    tiers: ''
   });
 
-  useEffect(() => onAuthStateChanged(auth, setUser), []);
-  useEffect(() => {
-    return onSnapshot(collection(db, "ideas"), (snap) => {
-      const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      // newest first
-      setIdeas(arr.sort((a,b) => (b?.uploadedAt?.seconds ?? 0) - (a?.uploadedAt?.seconds ?? 0)));
-    });
+  // 스코어카드
+  const [score, setScore] = useState({
+    opportunity: 7,
+    problem: 7,
+    feasibility: 6,
+    whyNow: 8,
+  });
+
+  // 한국화 노트(기존 필드 placeholder)
+  const [note1, setNote1] = useState('');
+  const [note2, setNote2] = useState('');
+  const [note3, setNote3] = useState('');
+
+  // 태그/사용사례/스택 (이전 단계에서 만들었던 메타)
+  const [tags, setTags] = useState([]);
+  const [useCases, setUseCases] = useState([]);
+  const [techStack, setTechStack] = useState([]);
+
+  const adminEmails = useMemo(()=>{
+    const raw = process.env.NEXT_PUBLIC_ADMIN_EMAILS || '';
+    return raw.split(',').map(s=>s.trim()).filter(Boolean);
   }, []);
 
-  if (!user) return <div className="text-center mt-8 font-semibold">Admin 로그인 필요</div>;
-  if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAILS) return <div className="text-center mt-8">권한 없음</div>;
+  const isAdmin = user && adminEmails.includes(user.email);
 
-  function kfitTotal(k) {
-    // 0–2 (regulatory), 0–1 (infra), 0–1 (behavior), 0–1 (competition) => max 5
-    return Number(k.regulatory) + Number(k.infra) + Number(k.behavior) + Number(k.competition);
-  }
+  useEffect(()=>{
+    const unsub = onAuthStateChanged(auth, (u)=> setUser(u));
+    return () => unsub();
+  }, []);
 
-  async function createIdea() {
-    const koreaFitScore = kfitTotal(form.kfit);
+  const handleGoogle = async () => {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+  };
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isAdmin) return alert('Admin 권한 필요');
+
     const payload = {
-      title: form.title.trim(),
-      summary: form.summary.trim(),
-      category: form.category || "",
-      targetUser: form.targetUser || "",
-      businessModel: form.businessModel || "",
-      sourceURL: form.sourceURL || "",
-      sourcePlatform: form.sourcePlatform,
-      uploadedAt: serverTimestamp(),
-      adminReview: "", // optional legacy
-      status: form.status,
-      // new fields
-      koreaFitDetail: {
-        regulatory: Number(form.kfit.regulatory),
-        infra: Number(form.kfit.infra),
-        behavior: Number(form.kfit.behavior),
-        competition: Number(form.kfit.competition),
+      title: title.trim(),
+      summary: summary.trim(),
+      category: category.trim(),
+      targetUser: targetUser.trim(),
+      source,
+      originUrl: originUrl.trim(),
+      // 확장
+      heroImageUrl: heroImageUrl.trim() || null,
+      badges,
+      offer: offer.trim() || null,
+      evidence: {
+        keyword: evidence.keyword.trim() || null,
+        volume: evidence.volume ? Number(evidence.volume) : null,
+        growthPct: evidence.growthPct ? Number(evidence.growthPct) : null,
+        chartImg: evidence.chartImg?.trim() || null,
       },
-      koreaFitScore,
-      koreanizationNotes: form.notes.map(s => (s || "").trim()).slice(0,3),
-      // Connection metadata
-      tags: form.tags.split(',').map(s => s.trim()).filter(Boolean).slice(0,10),
-      useCases: form.useCases.split(',').map(s => s.trim()).filter(Boolean).slice(0,10),
-      techStack: form.techStack.split(',').map(s => s.trim()).filter(Boolean).slice(0,10),
-      signals: { bookmarks: 0, last7dDelta: 0 }, // updated later by automation
+      pricing: {
+        model: pricing.model,
+        tiers: pricing.tiers
+          ? pricing.tiers.split(',').map(s=>s.trim()).filter(Boolean).slice(0,8)
+          : [],
+      },
+      scorecards: score,               // {opportunity, problem, feasibility, whyNow}
+      tags, useCases, techStack,       // 탐색/추천용 메타
+      status: 'Pending',
+      createdAt: serverTimestamp(),
+      createdBy: user?.email || null,
+      koreaNotes: [note1, note2, note3].filter(Boolean),
     };
-    await addDoc(collection(db, "ideas"), payload);
-    setForm({
-      ...form,
-      title: "", summary: "", sourceURL: "",
-      notes: ["", "", ""],
-      tags: "", useCases: "", techStack: "",
-    });
+
+    if (!payload.title) return alert('제목은 필수입니다.');
+    await addDoc(collection(db, 'ideas'), payload);
+    alert('등록 완료!');
+    // 간단 리셋
+    setTitle(''); setSummary(''); setCategory(''); setTargetUser('');
+    setOriginUrl(''); setHeroImageUrl(''); setBadges([]); setOffer('');
+    setEvidence({ keyword:'', volume:'', growthPct:'', chartImg:'' });
+    setPricing({ model:'subscription', tiers:'' });
+    setScore({ opportunity:7, problem:7, feasibility:6, whyNow:8 });
+    setTags([]); setUseCases([]); setTechStack([]); setNote1(''); setNote2(''); setNote3('');
+  };
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto py-16">
+        <h2 className="text-center mb-6">Admin 로그인 필요</h2>
+        <div className="flex justify-center">
+          <button onClick={handleGoogle} className="px-4 py-2 bg-black text-white rounded-md">Sign in with Google</button>
+        </div>
+      </div>
+    );
   }
 
-  async function patchIdea(id, changes) {
-    await updateDoc(doc(db, "ideas", id), changes);
+  if (!isAdmin) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 space-y-4">
+        <p>권한이 없습니다. 요청 이메일: <b>{user.email}</b></p>
+        <button onClick={handleSignOut} className="px-3 py-2 border rounded-md">Sign out</button>
+      </div>
+    );
   }
 
   return (
-    <div className="grid gap-6">
-      <section className="p-4 border rounded-lg max-w-2xl mx-auto">
-        <h2 className="font-semibold mb-3">새 아이디어 등록</h2>
-        <div className="grid gap-2">
-          <input className="px-3 py-2 rounded-lg border" placeholder="제목" value={form.title} onChange={e=>setForm({...form, title:e.target.value})}/>
-          <textarea className="px-3 py-2 rounded-lg border" placeholder="요약" value={form.summary} onChange={e=>setForm({...form, summary:e.target.value})}/>
-          <div className="grid grid-cols-2 gap-2">
-            <input className="px-3 py-2 rounded-lg border" placeholder="카테고리" value={form.category} onChange={e=>setForm({...form, category:e.target.value})}/>
-            <input className="px-3 py-2 rounded-lg border" placeholder="Target User" value={form.targetUser} onChange={e=>setForm({...form, targetUser:e.target.value})}/>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <select className="px-3 py-2 rounded-lg border" value={form.businessModel} onChange={e=>setForm({...form, businessModel:e.target.value})}>
-              <option value="">Business Model</option>
-              <option value="B2B SaaS">B2B SaaS</option>
-              <option value="B2C">B2C</option>
-              <option value="Marketplace">Marketplace</option>
-              <option value="Platform">Platform</option>
-              <option value="Fintech">Fintech</option>
-            </select>
-            <select className="px-3 py-2 rounded-lg border" value={form.sourcePlatform} onChange={e=>setForm({...form, sourcePlatform:e.target.value})}>
-              <option>ideabrowser</option>
-              <option>X</option>
-              <option>Hacker News</option>
-              <option>Reddit</option>
-              <option>YC</option>
-            </select>
-          </div>
-          <input className="px-3 py-2 rounded-lg border" placeholder="원본 URL" value={form.sourceURL} onChange={e=>setForm({...form, sourceURL:e.target.value})}/>
+    <div className="max-w-3xl mx-auto py-8 space-y-6">
+      <div className="flex justify-end">
+        <button onClick={handleSignOut} className="text-sm underline">Sign out</button>
+      </div>
 
-          <div className="grid gap-2 mt-2">
-            <input className="px-3 py-2 rounded-lg border" placeholder="태그 (쉼표로 구분)" value={form.tags} onChange={e=>setForm({...form, tags:e.target.value})}/>
-            <input className="px-3 py-2 rounded-lg border" placeholder="사용 사례 (쉼표로 구분)" value={form.useCases} onChange={e=>setForm({...form, useCases:e.target.value})}/>
-            <input className="px-3 py-2 rounded-lg border" placeholder="기술 스택 (쉼표로 구분)" value={form.techStack} onChange={e=>setForm({...form, techStack:e.target.value})}/>
-          </div>
-
-          <div className="grid grid-cols-4 gap-2 mt-2">
-            <div>
-              <div className="text-xs mb-1">Regulatory (0-2)</div>
-              <select className="px-2 py-2 rounded-lg border" value={form.kfit.regulatory} onChange={e=>setForm({...form, kfit:{...form.kfit, regulatory:e.target.value}})}>
-                {[0,1,2].map(n=><option key={n} value={n}>{n}</option>)}
-              </select>
-            </div>
-            <div>
-              <div className="text-xs mb-1">Infra (0-1)</div>
-              <select className="px-2 py-2 rounded-lg border" value={form.kfit.infra} onChange={e=>setForm({...form, kfit:{...form.kfit, infra:e.target.value}})}>
-                {[0,1].map(n=><option key={n} value={n}>{n}</option>)}
-              </select>
-            </div>
-            <div>
-              <div className="text-xs mb-1">Behavior (0-1)</div>
-              <select className="px-2 py-2 rounded-lg border" value={form.kfit.behavior} onChange={e=>setForm({...form, kfit:{...form.kfit, behavior:e.target.value}})}>
-                {[0,1].map(n=><option key={n} value={n}>{n}</option>)}
-              </select>
-            </div>
-            <div>
-              <div className="text-xs mb-1">Competition (0-1)</div>
-              <select className="px-2 py-2 rounded-lg border" value={form.kfit.competition} onChange={e=>setForm({...form, kfit:{...form.kfit, competition:e.target.value}})}>
-                {[0,1].map(n=><option key={n} value={n}>{n}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid gap-2 mt-2">
-            <div className="text-sm font-medium">한국화 노트 (3줄)</div>
-            {form.notes.map((v,idx)=>(
-              <input key={idx} className="px-3 py-2 rounded-lg border" placeholder={`노트 ${idx+1}`} value={v}
-                     onChange={e=>{
-                       const arr=[...form.notes]; arr[idx]=e.target.value; setForm({...form, notes:arr});
-                     }}/>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            <select className="px-3 py-2 rounded-lg border" value={form.status} onChange={e=>setForm({...form, status:e.target.value})}>
-              {["Pending","Approved","Rejected"].map(s=><option key={s} value={s}>{s}</option>)}
-            </select>
-            <div className="px-3 py-2 rounded-lg border bg-gray-50">
-              Korea Fit: <b>{kfitTotal(form.kfit)}</b> / 5
-            </div>
-          </div>
-
-          <button onClick={createIdea} className="px-3 py-2 rounded-lg border bg-blue-600 text-white mt-2">등록</button>
+      {/* 기본 정보 */}
+      <Section title="기본 정보">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <input className="rounded-md border px-3 py-2 sm:col-span-2" placeholder="제목"
+            value={title} onChange={e=>setTitle(e.target.value)} />
+          <textarea className="rounded-md border px-3 py-2 sm:col-span-2" rows={3} placeholder="요약"
+            value={summary} onChange={e=>setSummary(e.target.value)} />
+          <input className="rounded-md border px-3 py-2" placeholder="카테고리" value={category} onChange={e=>setCategory(e.target.value)} />
+          <input className="rounded-md border px-3 py-2" placeholder="Target User" value={targetUser} onChange={e=>setTargetUser(e.target.value)} />
+          <select className="rounded-md border px-3 py-2" value={source} onChange={(e)=>setSource(e.target.value)}>
+            <option value="ideabrowser">ideabrowser</option>
+            <option value="manual">manual</option>
+            <option value="crawler">crawler</option>
+          </select>
+          <input className="rounded-md border px-3 py-2" placeholder="원본 URL" value={originUrl} onChange={e=>setOriginUrl(e.target.value)} />
         </div>
-      </section>
+      </Section>
 
-      <section className="grid gap-3 max-w-3xl mx-auto">
-        {ideas.map(i => (
-          <div key={i.id} className="p-4 border rounded-lg flex justify-between items-start">
-            <div>
-              <div className="font-semibold">{i.title}</div>
-              <div className="text-xs text-zinc-500 mt-1">
-                Source: {i.sourcePlatform || "-"} {i.sourceURL ? "• " : ""}{i.sourceURL && <a className="underline" href={i.sourceURL} target="_blank">원문</a>}
-                {" • "}Korea Fit {i.koreaFitScore ?? "-"} / 5
-                {" • "}최근7일: {i?.signals?.last7dDelta ?? 0 >= 0 ? "+" : ""}{i?.signals?.last7dDelta ?? 0}
-              </div>
-              {i.koreanizationNotes?.length ? (
-                <ul className="list-disc ml-5 mt-1 text-xs">
-                  {i.koreanizationNotes.filter(Boolean).map((n,ix)=><li key={ix}>{n}</li>)}
-                </ul>
-              ) : null}
-            </div>
-            <div className="flex gap-2">
-              <button onClick={()=>patchIdea(i.id, { status: "Approved" })} className="px-3 py-1 rounded-lg border">승인</button>
-              <button onClick={()=>patchIdea(i.id, { status: "Rejected" })} className="px-3 py-1 rounded-lg border">거절</button>
-            </div>
-          </div>
-        ))}
-      </section>
+      {/* Hero & Badges */}
+      <Section title="Hero & Badges">
+        <input className="w-full rounded-md border px-3 py-2" placeholder="Hero 이미지 URL"
+          value={heroImageUrl} onChange={e=>setHeroImageUrl(e.target.value)} />
+        <BadgeInput label="Badges" value={badges} onChange={setBadges} placeholder="예: Perfect Timing, Unfair Advantage, Massive Market" />
+      </Section>
+
+      {/* Scorecards */}
+      <Section title="Scorecards (0–10)">
+        <div className="space-y-3">
+          <NumberInput label="Opportunity" value={score.opportunity} onChange={(v)=>setScore(s=>({...s, opportunity:v}))} />
+          <NumberInput label="Problem" value={score.problem} onChange={(v)=>setScore(s=>({...s, problem:v}))} />
+          <NumberInput label="Feasibility" value={score.feasibility} onChange={(v)=>setScore(s=>({...s, feasibility:v}))} />
+          <NumberInput label="Why Now" value={score.whyNow} onChange={(v)=>setScore(s=>({...s, whyNow:v}))} />
+        </div>
+      </Section>
+
+      {/* Offer / Evidence / Pricing */}
+      <Section title="Offer / Evidence / Pricing">
+        <input className="w-full rounded-md border px-3 py-2" placeholder="Offer (핵심 한 줄 제안)"
+          value={offer} onChange={e=>setOffer(e.target.value)} />
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <input className="rounded-md border px-3 py-2" placeholder="Evidence: Keyword"
+            value={evidence.keyword} onChange={e=>setEvidence(s=>({...s, keyword:e.target.value}))} />
+          <input className="rounded-md border px-3 py-2" placeholder="Evidence: Volume (숫자)"
+            value={evidence.volume} onChange={e=>setEvidence(s=>({...s, volume:e.target.value}))} />
+          <input className="rounded-md border px-3 py-2" placeholder="Evidence: Growth % (숫자)"
+            value={evidence.growthPct} onChange={e=>setEvidence(s=>({...s, growthPct:e.target.value}))} />
+          <input className="rounded-md border px-3 py-2" placeholder="Evidence: Chart 이미지 URL(선택)"
+            value={evidence.chartImg} onChange={e=>setEvidence(s=>({...s, chartImg:e.target.value}))} />
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <select className="rounded-md border px-3 py-2" value={pricing.model}
+            onChange={(e)=>setPricing(s=>({...s, model:e.target.value}))}>
+            <option value="subscription">subscription</option>
+            <option value="marketplace">marketplace</option>
+            <option value="one-time">one-time</option>
+            <option value="hybrid">hybrid</option>
+          </select>
+          <input className="rounded-md border px-3 py-2" placeholder="티어 (쉼표구분, 예: Starter, Pro, Team)"
+            value={pricing.tiers} onChange={(e)=>setPricing(s=>({...s, tiers:e.target.value}))} />
+        </div>
+      </Section>
+
+      {/* 메타(추천 강화를 위해 유지) */}
+      <Section title="탐색/추천 메타">
+        <BadgeInput label="태그 (tags)" value={tags} onChange={setTags} placeholder="예: AI, Education, Marketplace" />
+        <BadgeInput label="사용 사례 (useCases)" value={useCases} onChange={setUseCases} placeholder="예: Parents, Schools, Creators" />
+        <BadgeInput label="기술 스택 (techStack)" value={techStack} onChange={setTechStack} placeholder="예: Next.js, Firebase, Stripe" />
+      </Section>
+
+      {/* 한국화 노트 */}
+      <Section title="한국화 노트 (3줄)">
+        <div className="grid gap-3">
+          <input className="rounded-md border px-3 py-2" placeholder="노트 1" value={note1} onChange={e=>setNote1(e.target.value)} />
+          <input className="rounded-md border px-3 py-2" placeholder="노트 2" value={note2} onChange={e=>setNote2(e.target.value)} />
+          <input className="rounded-md border px-3 py-2" placeholder="노트 3" value={note3} onChange={e=>setNote3(e.target.value)} />
+        </div>
+      </Section>
+
+      <div className="py-2" />
+      <button onClick={handleSubmit} className="w-full bg-blue-600 text-white rounded-md py-3 font-medium">
+        등록
+      </button>
     </div>
   );
 }
