@@ -5,6 +5,30 @@ import { join } from 'path';
 
 console.log('🔍 Running predeploy checks...');
 
+// ensure TypeScript deps (if any .ts exists)
+import fs from 'node:fs';
+const hasTsFiles = !!fs.readdirSync('.', { withFileTypes: true })
+  .some(function scan(dirent) {
+    const name = dirent.name;
+    if (dirent.isDirectory() && !['node_modules', '.next', 'dist', '.vercel'].includes(name)) {
+      return fs.readdirSync(name, { withFileTypes: true }).some(d => scan({
+        isDirectory: () => d.isDirectory(),
+        name: `${name}/${d.name}`,
+      }));
+    }
+    return name.endsWith('.ts') || name.endsWith('.tsx');
+  });
+
+if (hasTsFiles) {
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  const dev = pkg.devDependencies || {};
+  if (!dev.typescript || !dev['@types/react'] || !dev['@types/node']) {
+    console.log('⚠️  Missing TS devDeps. Please run: npm i -D typescript @types/react @types/node');
+    process.exit(1);
+  }
+  console.log('✅ TypeScript dependencies verified');
+}
+
 // 1. 필수 파일 존재 확인
 const requiredFiles = [
   'lib/firebase.js',
