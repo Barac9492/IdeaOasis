@@ -57,33 +57,45 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = (await req.json().catch(() => null)) as Partial<Idea> | null;
-  if (!body?.sourceURL) {
-    return NextResponse.json({ error: "sourceURL required" }, { status: 400 });
-  }
+  try {
+    // 임시 디버깅 로깅
+    console.error('INGEST_ENV_CHECK', {
+      hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
+      hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+      hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
+    });
 
-  const now = new Date().toISOString();
-  const normalizedURL = normalizeUrl(body.sourceURL);
-  const payload: Idea = {
-    ...body,
-    sourceURL: normalizedURL,
-    updatedAt: now,
-  };
+    const body = (await req.json().catch(() => null)) as Partial<Idea> | null;
+    if (!body?.sourceURL) {
+      return NextResponse.json({ error: "sourceURL required" }, { status: 400 });
+    }
 
-  const db = getAdminDb();
-  const ideas = db.collection("ideas");
+    const now = new Date().toISOString();
+    const normalizedURL = normalizeUrl(body.sourceURL);
+    const payload: Idea = {
+      ...body,
+      sourceURL: normalizedURL,
+      updatedAt: now,
+    };
 
-  // sourceURL 기준 업서트
-  const snap = await ideas.where("sourceURL", "==", normalizedURL).limit(1).get();
+    const db = getAdminDb();
+    const ideas = db.collection("ideas");
 
-  if (snap.empty) {
-    payload.uploadedAt ||= now;
-    const ref = await ideas.add(payload);
-    return NextResponse.json({ ok: true, id: ref.id, action: "created" });
-  } else {
-    const ref = snap.docs[0].ref;
-    await ref.set(payload, { merge: true });
-    return NextResponse.json({ ok: true, id: ref.id, action: "updated" });
+    // sourceURL 기준 업서트
+    const snap = await ideas.where("sourceURL", "==", normalizedURL).limit(1).get();
+
+    if (snap.empty) {
+      payload.uploadedAt ||= now;
+      const ref = await ideas.add(payload);
+      return NextResponse.json({ ok: true, id: ref.id, action: "created" });
+    } else {
+      const ref = snap.docs[0].ref;
+      await ref.set(payload, { merge: true });
+      return NextResponse.json({ ok: true, id: ref.id, action: "updated" });
+    }
+  } catch (err: any) {
+    console.error('INGEST_ERROR', err?.message);
+    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
   }
 }
 
