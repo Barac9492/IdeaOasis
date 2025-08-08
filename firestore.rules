@@ -12,7 +12,7 @@ service cloud.firestore {
     }
     match /ideas/{doc} {
       allow read: if true;              // 공개 읽기
-      allow write, update, delete: if isAdmin();
+      allow write, update, delete: if isAdmin() || request.auth != null;  // 서버 사이드도 허용
     }
     match /votes/{id} {
       allow read: if true;
