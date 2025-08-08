@@ -1,36 +1,107 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+#############################################
+# 1. Dependencies
+#############################################
+node_modules
+.pnp
 .pnp.js
-.yarn/install-state.gz
 
-# testing
-/coverage
+#############################################
+# 2. Build output
+#############################################
+.next/
+out/
+build/
+dist/
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+#############################################
+# 3. Logs
+#############################################
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# local env files
-.env*.local
+#############################################
+# 4. Environment variables (local only)
+#############################################
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# vercel
+#############################################
+# 5. Firebase credentials/logs
+#############################################
+firebase-debug.log
+firebase-debug.*
+*.service-account.json
+
+#############################################
+# 6. Vercel config/cache
+#############################################
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+#############################################
+# 7. Cursor/AI IDE temporary files
+#############################################
+.cursorrules
+cursor.json
+cursor-history/
+cursor-backups/
+
+#############################################
+# 8. OS-specific files
+#############################################
+.DS_Store
+Thumbs.db
+
+#############################################
+# 9. Editor/IDE settings
+#############################################
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+#############################################
+# 10. Lint/style caches
+#############################################
+.eslintcache
+.stylelintcache
+
+#############################################
+# 11. REPL history
+#############################################
+.node_repl_history
+
+#############################################
+# 12. npm pack output
+#############################################
+*.tgz
+
+#############################################
+# 13. Yarn integrity
+#############################################
+.yarn-integrity
+
+#############################################
+# 14. Temporary files
+#############################################
+tmp/
+temp/
+*.tmp
+*.temp
+
+#############################################
+# 15. Misc. development leftovers
+#############################################
+*.log
+*.pid
+*.pid.lock
