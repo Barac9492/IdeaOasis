@@ -1,32 +1,31 @@
-import { getApps, initializeApp, cert, App } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+// lib/firebaseAdmin.ts
+import { getApps, initializeApp, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 
-let app: App | null = null;
-let adminDb: any = null;
+let _db: FirebaseFirestore.Firestore | null = null;
 
-function initializeFirebaseAdmin() {
-  if (!getApps().length) {
-    const projectId = process.env.FIREBASE_PROJECT_ID;
-    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    const privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+export function getAdminDb() {
+  if (_db) return _db;
 
-    if (!projectId || !clientEmail || !privateKey) {
-      return null; // Return null instead of throwing error
-    }
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
 
-    app = initializeApp({
-      credential: cert({ projectId, clientEmail, privateKey }),
-    });
-  } else {
-    app = getApps()[0]!;
+  if (!projectId || !clientEmail || !privateKeyRaw) {
+    throw new Error("Missing FIREBASE_* env for admin SDK");
   }
-  
-  return getFirestore(app);
-}
 
-// Initialize only if environment variables are available
-if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
-  adminDb = initializeFirebaseAdmin();
-}
+  const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
 
-export { adminDb };
+  if (!getApps().length) {
+    initializeApp({
+      credential: cert({
+        projectId,
+        clientEmail,
+        privateKey,
+      }),
+    });
+  }
+  _db = getFirestore();
+  return _db;
+}
