@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { db, auth } from "@/lib/firebase";
+import { db, auth } from "../../../lib/firebase";
 import { doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp, setDoc, deleteDoc, limit } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
@@ -86,9 +86,16 @@ export default function IdeaDetail() {
     <div className="grid gap-4">
       <section className="p-4 border rounded-lg">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl font-semibold">{idea.title}</h1>
             <p className="text-sm text-zinc-600 mt-1">{idea.summary}</p>
+            {/* offer 한 줄 */}
+            {idea.offer && (
+              <div className="p-3 rounded-lg border bg-white shadow-sm mt-2">
+                <div className="text-xs text-gray-500 mb-1">Offer</div>
+                <div className="font-medium">{idea.offer}</div>
+              </div>
+            )}
             <div className="text-xs text-zinc-500 mt-2">
               <span className="mr-2">Source: {idea.sourcePlatform || "-"}</span>
               {idea.sourceURL && <a href={idea.sourceURL} target="_blank" className="underline mr-2">원문</a>}
@@ -101,38 +108,65 @@ export default function IdeaDetail() {
               </ul>
             )}
             
-            {/* Tags, Use Cases, Tech Stack badges */}
-            {(idea.tags?.length > 0 || idea.useCases?.length > 0 || idea.techStack?.length > 0) && (
-              <div className="mt-3">
-                {idea.tags?.length > 0 && (
-                  <div className="mb-2">
-                    <div className="text-xs font-medium text-zinc-600 mb-1">태그</div>
-                    <div>
-                      {idea.tags.map((tag, idx) => (
-                        <span key={idx} className="inline-block px-2 py-0.5 text-xs rounded-full border mr-1 mt-1">{tag}</span>
-                      ))}
-                    </div>
+            {/* 배지들 */}
+            {(idea.badges?.length || idea.tags?.length || idea.useCases?.length || idea.techStack?.length) ? (
+              <div className="space-y-2 mt-3">
+                <div className="flex flex-wrap gap-1">
+                  {(idea.badges ?? []).map((b,i)=>(
+                    <span key={`b-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-gray-100 border">{b}</span>
+                  ))}
+                  {(idea.tags ?? []).map((t,i)=>(
+                    <span key={`t-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-blue-50 border border-blue-200">#{t}</span>
+                  ))}
+                  {(idea.useCases ?? []).map((u,i)=>(
+                    <span key={`u-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-violet-50 border border-violet-200">{u}</span>
+                  ))}
+                  {(idea.techStack ?? []).map((s,i)=>(
+                    <span key={`s-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 border border-emerald-200">{s}</span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            
+            {/* Scorecards */}
+            {idea.scorecards && (
+              <div className="grid sm:grid-cols-4 gap-2 mt-3">
+                {Object.entries(idea.scorecards).map(([k,v])=>(
+                  <div key={k} className="rounded-lg border p-3 text-center">
+                    <div className="text-xs text-gray-500">{k}</div>
+                    <div className="text-lg font-semibold">{v}/10</div>
                   </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Evidence */}
+            {idea.evidence && (
+              <div className="rounded-lg border p-3 space-y-2 mt-3">
+                <div className="text-sm font-medium">Evidence</div>
+                <div className="text-sm text-gray-700">
+                  {idea.evidence.keyword ? `Keyword: ${idea.evidence.keyword}` : ""}
+                  {idea.evidence.volume ? ` · Volume: ${idea.evidence.volume}` : ""}
+                  {idea.evidence.growthPct ? ` · Growth: ${idea.evidence.growthPct}%` : ""}
+                </div>
+                {idea.evidence.chartImg && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={idea.evidence.chartImg} alt="trend" className="rounded-md border" />
                 )}
-                {idea.useCases?.length > 0 && (
-                  <div className="mb-2">
-                    <div className="text-xs font-medium text-zinc-600 mb-1">사용 사례</div>
-                    <div>
-                      {idea.useCases.map((useCase, idx) => (
-                        <span key={idx} className="inline-block px-2 py-0.5 text-xs rounded-full border mr-1 mt-1 bg-blue-50">{useCase}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {idea.techStack?.length > 0 && (
-                  <div className="mb-2">
-                    <div className="text-xs font-medium text-zinc-600 mb-1">기술 스택</div>
-                    <div>
-                      {idea.techStack.map((tech, idx) => (
-                        <span key={idx} className="inline-block px-2 py-0.5 text-xs rounded-full border mr-1 mt-1 bg-green-50">{tech}</span>
-                      ))}
-                    </div>
-                  </div>
+              </div>
+            )}
+            
+            {/* Pricing */}
+            {idea.pricing && (
+              <div className="rounded-lg border p-3 space-y-2 mt-3">
+                <div className="text-sm font-medium">Pricing</div>
+                <div className="text-sm text-gray-700">Model: {idea.pricing.model}</div>
+                {Array.isArray(idea.pricing.tiers) && idea.pricing.tiers.length > 0 && (
+                  <ul className="list-disc pl-5 text-sm text-gray-700">
+                    {idea.pricing.tiers.map((t,i)=>(
+                      <li key={i}>{t}</li>
+                    ))}
+                  </ul>
                 )}
               </div>
             )}
