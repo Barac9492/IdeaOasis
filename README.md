@@ -11,7 +11,14 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=623382547830
 NEXT_PUBLIC_FIREBASE_APP_ID=1:623382547830:web:57ecb3bd49669afd72fe57
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-MLLBQ9DTWX
 NEXT_PUBLIC_ADMIN_EMAILS=ethancho12@gmail.com
-```
+
+# Firebase Admin SDK (for Ingest API)
+FIREBASE_PROJECT_ID=ideaoasis-gpt5-1
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@ideaoasis-gpt5-1.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n-----END PRIVATE KEY-----\n"
+
+# Ingest API Token
+INGEST_TOKEN=ideaoasis_ingest_XXXX
 2. `npm install`
 3. `npm run dev`
 
@@ -28,6 +35,9 @@ Deploy rules in `firestore.rules` to your Firebase project.
 - **Idea Details**: View individual ideas with comments and AI summary
 - **Admin Panel**: Manage ideas (admin only)
 - **Google Auth**: Sign in with Google account
+- **Connection Metadata**: Tags, use cases, and tech stack for better discovery
+- **Related Ideas**: AI-powered recommendations based on tags
+- **Ingest API**: Webhook endpoint for automated data ingestion
 
 ## Notes
 - Admin email is `ethancho12@gmail.com`
