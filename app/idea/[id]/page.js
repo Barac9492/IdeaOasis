@@ -5,6 +5,9 @@ import { db, auth } from "../../../lib/firebase";
 import { doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp, setDoc, deleteDoc, limit } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
+import SectionCard from "../../../components/SectionCard";
+import ScoreCard from "../../../components/ScoreCard";
+import BadgeRow from "../../../components/BadgeRow";
 
 export default function IdeaDetail() {
   const { id } = useParams();
@@ -78,144 +81,144 @@ export default function IdeaDetail() {
     else { await setDoc(ref, { ideaId: id, userUid: user.uid, createdAt: new Date().toISOString() }); setBm(true); }
   }
 
-  if (!idea) return <div>Loading…</div>;
-
-  const delta = (idea?.signals?.last7dDelta ?? 0);
+  if (!idea) return <div className="max-w-5xl mx-auto px-4 py-10">Loading...</div>;
 
   return (
-    <div className="grid gap-4">
-      <section className="p-4 border rounded-lg">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold">{idea.title}</h1>
-            <p className="text-sm text-zinc-600 mt-1">{idea.summary}</p>
-            {/* offer 한 줄 */}
-            {idea.offer && (
-              <div className="p-3 rounded-lg border bg-white shadow-sm mt-2">
-                <div className="text-xs text-gray-500 mb-1">Offer</div>
-                <div className="font-medium">{idea.offer}</div>
-              </div>
-            )}
-            <div className="text-xs text-zinc-500 mt-2">
-              <span className="mr-2">Source: {idea.sourcePlatform || "-"}</span>
-              {idea.sourceURL && <a href={idea.sourceURL} target="_blank" className="underline mr-2">원문</a>}
-              <span className="mr-2">Korea Fit: {idea.koreaFitScore ?? "-"}/5</span>
-              <span>최근7일: {delta >= 0 ? "+" : ""}{delta}</span>
-            </div>
-            {Array.isArray(idea.koreanizationNotes) && idea.koreanizationNotes.filter(Boolean).length > 0 && (
-              <ul className="list-disc ml-6 mt-2 text-xs">
-                {idea.koreanizationNotes.filter(Boolean).map((n,ix)=><li key={ix}>{n}</li>)}
-              </ul>
-            )}
-            
-            {/* 배지들 */}
-            {(idea.badges?.length || idea.tags?.length || idea.useCases?.length || idea.techStack?.length) ? (
-              <div className="space-y-2 mt-3">
-                <div className="flex flex-wrap gap-1">
-                  {(idea.badges ?? []).map((b,i)=>(
-                    <span key={`b-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-gray-100 border">{b}</span>
-                  ))}
-                  {(idea.tags ?? []).map((t,i)=>(
-                    <span key={`t-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-blue-50 border border-blue-200">#{t}</span>
-                  ))}
-                  {(idea.useCases ?? []).map((u,i)=>(
-                    <span key={`u-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-violet-50 border border-violet-200">{u}</span>
-                  ))}
-                  {(idea.techStack ?? []).map((s,i)=>(
-                    <span key={`s-${i}`} className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 border border-emerald-200">{s}</span>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            
-            {/* Scorecards */}
-            {idea.scorecards && (
-              <div className="grid sm:grid-cols-4 gap-2 mt-3">
-                {Object.entries(idea.scorecards).map(([k,v])=>(
-                  <div key={k} className="rounded-lg border p-3 text-center">
-                    <div className="text-xs text-gray-500">{k}</div>
-                    <div className="text-lg font-semibold">{v}/10</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* Evidence */}
-            {idea.evidence && (
-              <div className="rounded-lg border p-3 space-y-2 mt-3">
-                <div className="text-sm font-medium">Evidence</div>
-                <div className="text-sm text-gray-700">
-                  {idea.evidence.keyword ? `Keyword: ${idea.evidence.keyword}` : ""}
-                  {idea.evidence.volume ? ` · Volume: ${idea.evidence.volume}` : ""}
-                  {idea.evidence.growthPct ? ` · Growth: ${idea.evidence.growthPct}%` : ""}
+    <main className="max-w-6xl mx-auto px-4 py-8">
+      <header className="mb-6">
+        <h1 className="text-2xl font-semibold">{idea.title}</h1>
+        {idea.offer && <p className="text-gray-800 mt-1">{idea.offer}</p>}
+        <div className="mt-2">
+          <BadgeRow
+            badges={idea.badges || []}
+            tags={idea.tags || []}
+            useCases={idea.useCases || []}
+            techStack={idea.techStack || []}
+          />
+        </div>
+      </header>
+
+      <div className="grid lg:grid-cols-[1fr_320px] gap-6">
+        {/* 본문 */}
+        <article className="space-y-4">
+          {idea.summary && (
+            <SectionCard title="Summary">
+              <p className="text-gray-700">{idea.summary}</p>
+            </SectionCard>
+          )}
+
+          {idea.adminReview && (
+            <SectionCard title="Admin Review">
+              <p className="text-gray-800 whitespace-pre-wrap">{idea.adminReview}</p>
+            </SectionCard>
+          )}
+
+          {idea.evidence && (
+            <SectionCard title="Evidence">
+              <div className="text-sm text-gray-700 space-y-1">
+                <div>
+                  {idea.evidence.keyword && <>Keyword: <b>{idea.evidence.keyword}</b></>}
+                  {idea.evidence.volume && <> · Volume: <b>{idea.evidence.volume}</b></>}
+                  {idea.evidence.growthPct && <> · Growth: <b>{idea.evidence.growthPct}</b></>}
                 </div>
                 {idea.evidence.chartImg && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={idea.evidence.chartImg} alt="trend" className="rounded-md border" />
                 )}
               </div>
-            )}
-            
-            {/* Pricing */}
-            {idea.pricing && (
-              <div className="rounded-lg border p-3 space-y-2 mt-3">
-                <div className="text-sm font-medium">Pricing</div>
-                <div className="text-sm text-gray-700">Model: {idea.pricing.model}</div>
+            </SectionCard>
+          )}
+
+          {idea.pricing && (
+            <SectionCard title="Pricing">
+              <div className="text-sm text-gray-700 space-y-2">
+                {idea.pricing.model && <div>Model: <b>{idea.pricing.model}</b></div>}
                 {Array.isArray(idea.pricing.tiers) && idea.pricing.tiers.length > 0 && (
-                  <ul className="list-disc pl-5 text-sm text-gray-700">
-                    {idea.pricing.tiers.map((t,i)=>(
-                      <li key={i}>{t}</li>
-                    ))}
+                  <ul className="list-disc pl-5">
+                    {idea.pricing.tiers.map((t, i) => <li key={i}>{t}</li>)}
                   </ul>
                 )}
               </div>
-            )}
-          </div>
-          <button onClick={toggleBookmark} className="text-sm underline">{bm ? "★ 북마크됨" : "☆ 북마크"}</button>
-        </div>
-      </section>
+            </SectionCard>
+          )}
 
-      <section className="p-4 border rounded-lg">
-        <h2 className="font-semibold mb-2">AI 요약 (댓글 기반)</h2>
-        <div className="mt-2 text-sm">{idea.commentSummary ?? "아직 요약 없음"}</div>
-      </section>
-
-      <section className="p-4 border rounded-lg">
-        <h2 className="font-semibold mb-2">댓글</h2>
-        <div className="grid gap-2">
-          {comments.map(c => (
-            <div key={c.id} className="text-sm">
-              <span className="text-zinc-400">{c.authorEmail}</span>: {c.text}
+          {/* 댓글 섹션 */}
+          <SectionCard title="댓글">
+            <div className="grid gap-2">
+              {comments.map(c => (
+                <div key={c.id} className="text-sm">
+                  <span className="text-zinc-400">{c.authorEmail}</span>: {c.text}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="mt-3 flex gap-2">
-          <input value={text} onChange={e=>setText(e.target.value)} placeholder="의견을 남겨주세요" className="flex-1 px-3 py-2 rounded-lg border" />
-          <button onClick={submit} className="px-3 py-2 rounded-lg border">등록</button>
-        </div>
-      </section>
+            <div className="mt-3 flex gap-2">
+              <input value={text} onChange={e=>setText(e.target.value)} placeholder="의견을 남겨주세요" className="flex-1 px-3 py-2 rounded-lg border" />
+              <button onClick={submit} className="px-3 py-2 rounded-lg border">등록</button>
+            </div>
+          </SectionCard>
 
-      {/* Related Ideas Section */}
-      {relatedIdeas.length > 0 && (
-        <section className="p-4 border rounded-lg">
-          <h2 className="font-semibold mb-3">관련 아이디어</h2>
-          <div className="grid gap-3">
-            {relatedIdeas.map((related) => (
-              <Link key={related.id} href={`/idea/${related.id}`} className="block p-3 border rounded-lg hover:bg-gray-50">
-                <div className="font-medium text-sm">{related.title}</div>
-                <div className="text-xs text-zinc-600 mt-1">{related.summary}</div>
-                {related.tags && related.tags.length > 0 && (
-                  <div className="mt-2">
-                    {related.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className="inline-block px-1.5 py-0.5 text-xs rounded-full border mr-1">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+          {/* AI 요약 */}
+          <SectionCard title="AI 요약 (댓글 기반)">
+            <div className="text-sm">{idea.commentSummary ?? "아직 요약 없음"}</div>
+          </SectionCard>
+
+          {/* Related Ideas Section */}
+          {relatedIdeas.length > 0 && (
+            <SectionCard title="관련 아이디어">
+              <div className="grid gap-3">
+                {relatedIdeas.map((related) => (
+                  <Link key={related.id} href={`/idea/${related.id}`} className="block p-3 border rounded-lg hover:bg-gray-50">
+                    <div className="font-medium text-sm">{related.title}</div>
+                    <div className="text-xs text-zinc-600 mt-1">{related.summary}</div>
+                    {related.tags && related.tags.length > 0 && (
+                      <div className="mt-2">
+                        {related.tags.slice(0, 3).map((tag, idx) => (
+                          <span key={idx} className="inline-block px-1.5 py-0.5 text-xs rounded-full border mr-1">{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+        </article>
+
+        {/* 사이드바 */}
+        <aside className="space-y-4">
+          <SectionCard title="Scorecards">
+            <ScoreCard scores={idea.scorecards || {}} />
+          </SectionCard>
+
+          <SectionCard title="Meta">
+            <div className="text-sm text-gray-700 space-y-1">
+              <div>Category: <b>{idea.category || "-"}</b></div>
+              <div>Target User: <b>{idea.targetUser || "-"}</b></div>
+              <div>Status: <b>{idea.status || "Pending"}</b></div>
+              <div className="truncate">
+                Source: {idea.sourcePlatform ? <b>{idea.sourcePlatform}</b> : "-"}
+              </div>
+              {idea.sourceURL && (
+                <a
+                  href={idea.sourceURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline break-all"
+                >
+                  {idea.sourceURL}
+                </a>
+              )}
+            </div>
+          </SectionCard>
+
+          {/* 북마크 버튼 */}
+          <SectionCard title="Actions">
+            <button onClick={toggleBookmark} className="w-full px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
+              {bm ? "★ 북마크됨" : "☆ 북마크"}
+            </button>
+          </SectionCard>
+        </aside>
+      </div>
+    </main>
   );
 }
