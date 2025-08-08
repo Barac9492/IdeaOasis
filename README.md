@@ -17,8 +17,8 @@ FIREBASE_PROJECT_ID=ideaoasis-gpt5-1
 FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@ideaoasis-gpt5-1.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n-----END PRIVATE KEY-----\n"
 
-# Ingest API Token
-INGEST_TOKEN=ideaoasis_ingest_XXXX
+# Ingest API Token (Bearer token for webhook authentication)
+INGEST_TOKEN=ideaoasis_ingest_6f2c1a9f8eab47e6b3d2c45f9d7a1c84
 2. `npm install`
 3. `npm run dev`
 
@@ -37,7 +37,51 @@ Deploy rules in `firestore.rules` to your Firebase project.
 - **Google Auth**: Sign in with Google account
 - **Connection Metadata**: Tags, use cases, and tech stack for better discovery
 - **Related Ideas**: AI-powered recommendations based on tags
-- **Ingest API**: Webhook endpoint for automated data ingestion
+- **Ingest API**: Webhook endpoint for automated data ingestion with upsert support
+
+## Ingest API Usage
+
+### Authentication
+Use Bearer token in Authorization header:
+```bash
+curl -X POST https://your-domain.vercel.app/api/ingest \
+  -H "Authorization: Bearer $INGEST_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{...}'
+```
+
+### Single Item
+```json
+{
+  "title": "TrustSwing: Used Golf Sim Market",
+  "summary": "Verified marketplace for pre-owned golf simulators",
+  "category": "Marketplace",
+  "sourceURL": "https://example.com/idea",
+  "sourcePlatform": "ideabrowser",
+  "tags": ["golf", "marketplace"],
+  "koreaFitScore": 4
+}
+```
+
+### Batch Items
+```json
+[
+  { "title": "Idea 1", "sourceURL": "..." },
+  { "title": "Idea 2", "sourceURL": "..." }
+]
+```
+
+### Response Format
+```json
+{
+  "ok": true,
+  "count": 2,
+  "results": [
+    { "id": "doc1", "mode": "new", "title": "Idea 1" },
+    { "id": "doc2", "mode": "bySourceURL", "title": "Idea 2" }
+  ]
+}
+```
 
 ## Notes
 - Admin email is `ethancho12@gmail.com`
