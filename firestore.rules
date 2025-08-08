@@ -10,9 +10,19 @@ service cloud.firestore {
           "ethancho12@gmail.com" // NEXT_PUBLIC_ADMIN_EMAILS와 일치
         ];
     }
-    match /ideas/{doc} {
-      allow read, write: if true;       // 임시로 모든 접근 허용 (테스트용)
+    // 공개 읽기
+    match /ideas/{doc} { allow read: if true; allow write: if false; }
+    match /comments/{doc} { allow read: if true; allow create: if isSignedIn(); }
+    match /votes/{doc} { allow read: if true; allow create: if isSignedIn(); }
+    match /bookmarks/{doc} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow delete: if isSignedIn();
+      allow update: if false;
     }
+
+    // 기타는 기본 차단
+    match /{document=**} { allow read: if false; allow write: if false; }
     match /votes/{id} {
       allow read: if true;
       allow create: if isSignedIn();
