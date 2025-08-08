@@ -19,6 +19,17 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFA
 
 # Ingest API Token (Bearer token for webhook authentication)
 INGEST_TOKEN=ideaoasis_ingest_6f2c1a9f8eab47e6b3d2c45f9d7a1c84
+
+## Environment Variables Setup
+
+### Local Development (.env.local)
+Copy the environment variables above to your `.env.local` file.
+
+### Vercel Deployment
+Add all environment variables to your Vercel project settings:
+1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+2. Add each variable for Production, Preview, and Development environments
+3. Make sure to include both client (NEXT_PUBLIC_*) and server (FIREBASE_*) variables
 2. `npm install`
 3. `npm run dev`
 
