@@ -15,17 +15,35 @@ export function getAdminDb() {
     throw new Error("Missing FIREBASE_* env for admin SDK");
   }
 
-  const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
-
-  if (!getApps().length) {
-    initializeApp({
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
-    });
+  // 더 강력한 줄바꿈 처리
+  let privateKey = privateKeyRaw;
+  
+  // Vercel 환경변수에서 \n이 실제 줄바꿈으로 변환되지 않은 경우 처리
+  if (privateKey.includes('\\n')) {
+    privateKey = privateKey.replace(/\\n/g, '\n');
   }
-  _db = getFirestore();
-  return _db;
+  
+  // 멀티라인 형식이 아닌 경우 줄바꿈 추가
+  if (!privateKey.includes('\n')) {
+    privateKey = privateKey.replace(/-----BEGIN PRIVATE KEY-----/, '-----BEGIN PRIVATE KEY-----\n');
+    privateKey = privateKey.replace(/-----END PRIVATE KEY-----/, '\n-----END PRIVATE KEY-----');
+    privateKey = privateKey.replace(/(.{64})/g, '$1\n');
+  }
+
+  try {
+    if (!getApps().length) {
+      initializeApp({
+        credential: cert({
+          projectId,
+          clientEmail,
+          privateKey,
+        }),
+      });
+    }
+    _db = getFirestore();
+    return _db;
+  } catch (error: any) {
+    console.error('Firebase Admin SDK initialization error:', error.message);
+    throw new Error(`Firebase Admin SDK failed: ${error.message}`);
+  }
 }
