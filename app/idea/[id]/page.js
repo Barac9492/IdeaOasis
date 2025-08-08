@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { db, auth } from "@/lib/firebase";
-import { doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp, setDoc, deleteDoc, limit } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import Link from "next/link";
 
 export default function IdeaDetail() {
   const { id } = useParams();
@@ -12,12 +13,47 @@ export default function IdeaDetail() {
   const [text, setText] = useState("");
   const [user, setUser] = useState(null);
   const [bm, setBm] = useState(false);
+  const [relatedIdeas, setRelatedIdeas] = useState([]);
 
   useEffect(() => onAuthStateChanged(auth, setUser), []);
 
   useEffect(() => {
     if (!id) return;
-    getDoc(doc(db, "ideas", id)).then((d) => setIdea({ id: d.id, ...d.data() }));
+    getDoc(doc(db, "ideas", id)).then((d) => {
+      const ideaData = { id: d.id, ...d.data() };
+      setIdea(ideaData);
+      
+      // Load related ideas
+      if (ideaData.tags && ideaData.tags.length > 0) {
+        const relatedQuery = query(
+          collection(db, "ideas"),
+          where("tags", "array-contains-any", ideaData.tags.slice(0, 10)),
+          limit(6)
+        );
+        onSnapshot(relatedQuery, (snap) => {
+          const related = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .filter(item => item.id !== id) // exclude current idea
+            .slice(0, 3); // top 3
+          setRelatedIdeas(related);
+        });
+      } else if (ideaData.category) {
+        // fallback to category
+        const relatedQuery = query(
+          collection(db, "ideas"),
+          where("category", "==", ideaData.category),
+          limit(3)
+        );
+        onSnapshot(relatedQuery, (snap) => {
+          const related = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .filter(item => item.id !== id)
+            .slice(0, 3);
+          setRelatedIdeas(related);
+        });
+      }
+    });
+    
     const q = query(collection(db, "comments"), where("ideaId", "==", id));
     return onSnapshot(q, (snap) => {
       setComments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -64,6 +100,42 @@ export default function IdeaDetail() {
                 {idea.koreanizationNotes.filter(Boolean).map((n,ix)=><li key={ix}>{n}</li>)}
               </ul>
             )}
+            
+            {/* Tags, Use Cases, Tech Stack badges */}
+            {(idea.tags?.length > 0 || idea.useCases?.length > 0 || idea.techStack?.length > 0) && (
+              <div className="mt-3">
+                {idea.tags?.length > 0 && (
+                  <div className="mb-2">
+                    <div className="text-xs font-medium text-zinc-600 mb-1">태그</div>
+                    <div>
+                      {idea.tags.map((tag, idx) => (
+                        <span key={idx} className="inline-block px-2 py-0.5 text-xs rounded-full border mr-1 mt-1">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {idea.useCases?.length > 0 && (
+                  <div className="mb-2">
+                    <div className="text-xs font-medium text-zinc-600 mb-1">사용 사례</div>
+                    <div>
+                      {idea.useCases.map((useCase, idx) => (
+                        <span key={idx} className="inline-block px-2 py-0.5 text-xs rounded-full border mr-1 mt-1 bg-blue-50">{useCase}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {idea.techStack?.length > 0 && (
+                  <div className="mb-2">
+                    <div className="text-xs font-medium text-zinc-600 mb-1">기술 스택</div>
+                    <div>
+                      {idea.techStack.map((tech, idx) => (
+                        <span key={idx} className="inline-block px-2 py-0.5 text-xs rounded-full border mr-1 mt-1 bg-green-50">{tech}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <button onClick={toggleBookmark} className="text-sm underline">{bm ? "★ 북마크됨" : "☆ 북마크"}</button>
         </div>
@@ -88,6 +160,28 @@ export default function IdeaDetail() {
           <button onClick={submit} className="px-3 py-2 rounded-lg border">등록</button>
         </div>
       </section>
+
+      {/* Related Ideas Section */}
+      {relatedIdeas.length > 0 && (
+        <section className="p-4 border rounded-lg">
+          <h2 className="font-semibold mb-3">관련 아이디어</h2>
+          <div className="grid gap-3">
+            {relatedIdeas.map((related) => (
+              <Link key={related.id} href={`/idea/${related.id}`} className="block p-3 border rounded-lg hover:bg-gray-50">
+                <div className="font-medium text-sm">{related.title}</div>
+                <div className="text-xs text-zinc-600 mt-1">{related.summary}</div>
+                {related.tags && related.tags.length > 0 && (
+                  <div className="mt-2">
+                    {related.tags.slice(0, 3).map((tag, idx) => (
+                      <span key={idx} className="inline-block px-1.5 py-0.5 text-xs rounded-full border mr-1">{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

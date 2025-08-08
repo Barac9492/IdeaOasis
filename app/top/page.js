@@ -43,6 +43,13 @@ export default function Top() {
                   <span className="mr-2">Korea Fit: {i.koreaFitScore ?? "-"}/5</span>
                   <span>최근7일: {delta >= 0 ? "+" : ""}{delta}</span>
                 </div>
+                {i.tags && i.tags.length > 0 && (
+                  <div className="mt-2">
+                    {i.tags.slice(0, 5).map((tag, idx) => (
+                      <span key={idx} className="inline-block px-2 py-0.5 text-xs rounded-full border mr-1 mt-1">{tag}</span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="text-sm">Score: {i.score}</div>
             </div>

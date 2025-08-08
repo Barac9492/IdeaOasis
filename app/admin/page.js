@@ -20,6 +20,10 @@ export default function Admin() {
     kfit: { regulatory: 1, infra: 1, behavior: 1, competition: 0 },
     // Koreanization notes (3 bullets)
     notes: ["", "", ""],
+    // Connection metadata
+    tags: "",
+    useCases: "",
+    techStack: "",
   });
 
   useEffect(() => onAuthStateChanged(auth, setUser), []);
@@ -61,6 +65,10 @@ export default function Admin() {
       },
       koreaFitScore,
       koreanizationNotes: form.notes.map(s => (s || "").trim()).slice(0,3),
+      // Connection metadata
+      tags: form.tags.split(',').map(s => s.trim()).filter(Boolean).slice(0,10),
+      useCases: form.useCases.split(',').map(s => s.trim()).filter(Boolean).slice(0,10),
+      techStack: form.techStack.split(',').map(s => s.trim()).filter(Boolean).slice(0,10),
       signals: { bookmarks: 0, last7dDelta: 0 }, // updated later by automation
     };
     await addDoc(collection(db, "ideas"), payload);
@@ -68,6 +76,7 @@ export default function Admin() {
       ...form,
       title: "", summary: "", sourceURL: "",
       notes: ["", "", ""],
+      tags: "", useCases: "", techStack: "",
     });
   }
 
@@ -104,6 +113,12 @@ export default function Admin() {
             </select>
           </div>
           <input className="px-3 py-2 rounded-lg border" placeholder="원본 URL" value={form.sourceURL} onChange={e=>setForm({...form, sourceURL:e.target.value})}/>
+
+          <div className="grid gap-2 mt-2">
+            <input className="px-3 py-2 rounded-lg border" placeholder="태그 (쉼표로 구분)" value={form.tags} onChange={e=>setForm({...form, tags:e.target.value})}/>
+            <input className="px-3 py-2 rounded-lg border" placeholder="사용 사례 (쉼표로 구분)" value={form.useCases} onChange={e=>setForm({...form, useCases:e.target.value})}/>
+            <input className="px-3 py-2 rounded-lg border" placeholder="기술 스택 (쉼표로 구분)" value={form.techStack} onChange={e=>setForm({...form, techStack:e.target.value})}/>
+          </div>
 
           <div className="grid grid-cols-4 gap-2 mt-2">
             <div>
