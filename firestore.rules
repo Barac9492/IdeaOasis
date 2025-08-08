@@ -5,11 +5,14 @@ service cloud.firestore {
       return request.auth != null;
     }
     function isAdmin() {
-      return request.auth.token.email == "ethancho12@gmail.com";
+      return request.auth != null &&
+        request.auth.token.email in [
+          "ethancho12@gmail.com" // NEXT_PUBLIC_ADMIN_EMAILS와 일치
+        ];
     }
-    match /ideas/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
+    match /ideas/{doc} {
+      allow read: if true;              // 공개 읽기
+      allow write, update, delete: if isAdmin();
     }
     match /votes/{id} {
       allow read: if true;
