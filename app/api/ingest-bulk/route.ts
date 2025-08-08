@@ -2,6 +2,10 @@
 import { NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 
+// 클라이언트 SDK 폴백용
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, setDoc, doc, query, where, getDocs } from "firebase/firestore";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -33,50 +37,120 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json().catch(() => null);
-  const items = Array.isArray(body) ? body : body?.items;
-  if (!Array.isArray(items)) {
+  
+  // Defensive checks
+  if (!Array.isArray(body)) {
     return NextResponse.json({ error: "items (array) required" }, { status: 400 });
+  }
+  
+  const items = body;
+  if (items.length === 0) {
+    return NextResponse.json({ summary: { total: 0, ok: 0, fail: 0 }, results: [] });
   }
 
   const now = new Date().toISOString();
-  const db = getAdminDb();
-  const ideas = db.collection("ideas");
-
   const results: Array<{ ok: boolean; id?: string; error?: string; action?: "created"|"updated"; url?: string }> = [];
 
-  for (const raw of items.slice(0, 100)) {
+  // Admin SDK 시도
+  try {
+    const db = getAdminDb();
+    const ideas = db.collection("ideas");
+
+    for (const raw of items.slice(0, 100)) {
+      try {
+        if (!raw?.sourceURL) {
+          results.push({ ok: false, error: "missing sourceURL" });
+          continue;
+        }
+        const normalizedURL = normalizeUrl(raw.sourceURL);
+
+        const payload: Item = {
+          ...raw,
+          sourceURL: normalizedURL,
+          updatedAt: now,
+        };
+
+        const snap = await ideas.where("sourceURL", "==", normalizedURL).limit(1).get();
+        if (snap.empty) {
+          payload.uploadedAt ||= now;
+          const ref = await ideas.add(payload);
+          results.push({ ok: true, id: ref.id, action: "created", url: normalizedURL });
+        } else {
+          const ref = snap.docs[0].ref;
+          await ref.set(payload, { merge: true });
+          results.push({ ok: true, id: ref.id, action: "updated", url: normalizedURL });
+        }
+      } catch (e: any) {
+        results.push({ ok: false, error: String(e?.message || e) });
+      }
+    }
+  } catch (adminError: any) {
+    console.error('Admin SDK failed, trying client SDK:', adminError.message);
+    
+    // 클라이언트 SDK로 폴백
     try {
-      if (!raw?.sourceURL) {
-        results.push({ ok: false, error: "missing sourceURL" });
-        continue;
-      }
-      const normalizedURL = normalizeUrl(raw.sourceURL);
-
-      const payload: Item = {
-        ...raw,
-        sourceURL: normalizedURL,
-        updatedAt: now,
+      const firebaseConfig = {
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
       };
+      
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const ideasRef = collection(db, "ideas");
+      
+      for (const raw of items.slice(0, 100)) {
+        try {
+          if (!raw?.sourceURL) {
+            results.push({ ok: false, error: "missing sourceURL" });
+            continue;
+          }
+          const normalizedURL = normalizeUrl(raw.sourceURL);
 
-      const snap = await ideas.where("sourceURL", "==", normalizedURL).limit(1).get();
-      if (snap.empty) {
-        payload.uploadedAt ||= now;
-        const ref = await ideas.add(payload);
-        results.push({ ok: true, id: ref.id, action: "created", url: normalizedURL });
-      } else {
-        const ref = snap.docs[0].ref;
-        await ref.set(payload, { merge: true });
-        results.push({ ok: true, id: ref.id, action: "updated", url: normalizedURL });
+          const payload: Item = {
+            ...raw,
+            sourceURL: normalizedURL,
+            updatedAt: now,
+          };
+
+          // sourceURL 기준 검색
+          const q = query(ideasRef, where("sourceURL", "==", normalizedURL));
+          const querySnapshot = await getDocs(q);
+          
+          if (querySnapshot.empty) {
+            payload.uploadedAt ||= now;
+            const docRef = await addDoc(ideasRef, payload);
+            results.push({ ok: true, id: docRef.id, action: "created", url: normalizedURL });
+          } else {
+            const docRef = doc(db, "ideas", querySnapshot.docs[0].id);
+            await setDoc(docRef, payload, { merge: true });
+            results.push({ ok: true, id: querySnapshot.docs[0].id, action: "updated", url: normalizedURL });
+          }
+        } catch (e: any) {
+          results.push({ ok: false, error: String(e?.message || e) });
+        }
       }
-    } catch (e: any) {
-      results.push({ ok: false, error: String(e?.message || e) });
+    } catch (clientError: any) {
+      console.error('Client SDK also failed:', clientError.message);
+      return NextResponse.json({ error: "Both Admin and Client SDK failed" }, { status: 500 });
     }
   }
 
-  const ok = results.filter(r => r.ok).length;
-  const fail = results.length - ok;
+  const okCount = results.filter(r => r.ok).length;
+  const failCount = results.length - okCount;
 
-  return NextResponse.json({ summary: { total: results.length, ok, fail }, results });
+  // Development 로그
+  if (process.env.NODE_ENV !== 'production') {
+    console.info(`Bulk ingest: ${okCount} success, ${failCount} failed`);
+  }
+
+  return NextResponse.json({ 
+    summary: { total: results.length, ok: okCount, fail: failCount }, 
+    results 
+  });
 }
 
 export async function GET() {

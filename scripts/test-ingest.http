@@ -1,0 +1,63 @@
+### Test Ingest API Endpoints
+
+### 1. GET /api/ingest (expect 405)
+GET https://idea-oasis.vercel.app/api/ingest
+
+### 2. POST /api/ingest without token (expect 401)
+POST https://idea-oasis.vercel.app/api/ingest
+Content-Type: application/json
+
+{
+  "title": "Test without token",
+  "summary": "This should fail with 401",
+  "sourceURL": "https://test-no-token"
+}
+
+### 3. POST /api/ingest with token (expect 200)
+POST https://idea-oasis.vercel.app/api/ingest
+Content-Type: application/json
+X-Ingest-Token: ideaoasis_ingest_6f2c1a9f8eab47e6b3d2c45f9d7a1c84
+
+{
+  "title": "Test with token",
+  "summary": "This should succeed with 200",
+  "sourceURL": "https://test-with-token",
+  "offer": "A test idea",
+  "badges": ["Test", "API"],
+  "tags": ["test", "api"],
+  "scorecards": {
+    "opportunity": 7,
+    "problem": 6,
+    "feasibility": 5,
+    "whyNow": 8
+  },
+  "status": "Pending",
+  "koreaFit": 4
+}
+
+### 4. POST /api/ingest-bulk with multiple items
+POST https://idea-oasis.vercel.app/api/ingest-bulk
+Content-Type: application/json
+X-Ingest-Token: ideaoasis_ingest_6f2c1a9f8eab47e6b3d2c45f9d7a1c84
+
+[
+  {
+    "title": "Bulk Test 1",
+    "summary": "First item in bulk test",
+    "sourceURL": "https://bulk-test-1",
+    "offer": "Bulk processing test",
+    "tags": ["bulk", "test"],
+    "status": "Pending"
+  },
+  {
+    "title": "Bulk Test 2",
+    "summary": "Second item in bulk test",
+    "sourceURL": "https://bulk-test-2",
+    "offer": "Another bulk test",
+    "tags": ["bulk", "test"],
+    "status": "Pending"
+  }
+]
+
+### 5. Test environment variables
+GET https://idea-oasis.vercel.app/api/test
