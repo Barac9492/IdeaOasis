@@ -31,20 +31,16 @@ export function getAdminDb() {
   }
 
   try {
-    // 기존 앱이 있으면 제거하고 새로 초기화
-    const apps = getApps();
-    if (apps.length > 0) {
-      // 기존 앱 제거
-      apps.forEach(app => app.delete());
+    // 기존 앱이 있으면 새로 초기화하지 않음
+    if (!getApps().length) {
+      initializeApp({
+        credential: cert({
+          projectId,
+          clientEmail,
+          privateKey,
+        }),
+      });
     }
-    
-    initializeApp({
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
-    });
     
     _db = getFirestore();
     return _db;
