@@ -1,5 +1,5 @@
 import './globals.css';
-import Nav from "@/components/Nav";
+import Nav from "@/shared/ui/components/Nav";
 
 export const metadata = {
   title: 'IdeaOasis',
