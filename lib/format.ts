@@ -9,3 +9,11 @@ export const formatDateKR = (iso?: string) => {
 };
 export const formatKRW = (n?: number) =>
   typeof n === 'number' ? new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(n) : '';
+export const formatUSD = (n?: number) =>
+  typeof n === 'number' ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n) : '';
+export const formatKRWWithUSD = (krw?: number, usd?: number) => {
+  const w = formatKRW(krw);
+  const u = formatUSD(usd);
+  if (w && u) return `${w} (${u})`;
+  return w || u || '';
+};

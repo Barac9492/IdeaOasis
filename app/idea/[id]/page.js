@@ -81,7 +81,7 @@ export default function IdeaDetail() {
     else { await setDoc(ref, { ideaId: id, userUid: user.uid, createdAt: new Date().toISOString() }); setBm(true); }
   }
 
-  if (!idea) return <div className="max-w-5xl mx-auto px-4 py-10">Loading...</div>;
+  if (!idea) return <div><div className="max-w-6xl mx-auto px-4 py-8"><div className="animate-pulse h-6 bg-zinc-200 rounded w-2/3 mb-4" /><div className="animate-pulse h-4 bg-zinc-200 rounded w-1/2 mb-2" /><div className="animate-pulse h-4 bg-zinc-200 rounded w-5/6 mb-2" /><div className="animate-pulse h-4 bg-zinc-200 rounded w-4/6 mb-6" /></div></div>;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">

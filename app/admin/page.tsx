@@ -1,11 +1,39 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function AdminPage() {
   const [form, setForm] = useState({
     title: '', sourceUrl: '', sourceName: '',
-    summary3: '', tags: '', koreaFit: 6, whyNow: '', risks: ''
+    summary3: '', tags: '', koreaFit: 6, whyNow: '', risks: '',
+    ogImage: '', domain: ''
   });
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
+  const [loadingMeta, setLoadingMeta] = useState(false);
+
+  useEffect(() => {
+    async function run() {
+      const url = form.sourceUrl?.trim();
+      if (!url || !/^https?:\/\//i.test(url)) return;
+      setLoadingMeta(true);
+      try {
+        const metaRes = await fetch(`/api/meta?url=${encodeURIComponent(url)}`);
+        const meta = await metaRes.json();
+        const domain = (() => { try { return new URL(url).hostname; } catch { return ''; } })();
+        setForm((f) => ({
+          ...f,
+          title: f.title || meta.title || f.title,
+          summary3: f.summary3 || meta.description || f.summary3,
+          ogImage: meta.ogImage || f.ogImage,
+          sourceName: f.sourceName || domain.split('.').slice(-2).join('.'),
+          domain
+        }));
+        setSuggestedTags(meta.tags || []);
+      } finally {
+        setLoadingMeta(false);
+      }
+    }
+    run();
+  }, [form.sourceUrl]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -13,7 +41,7 @@ export default function AdminPage() {
       ...form,
       tags: form.tags.split(',').map(s => s.trim()).filter(Boolean),
       risks: form.risks.split('\n').map(s => s.trim()).filter(Boolean),
-    };
+    } as any;
     const res = await fetch('/api/ingest-bulk', {
       method: 'POST',
       headers: {
@@ -32,8 +60,27 @@ export default function AdminPage() {
         <input className="w-full border rounded p-2" placeholder="제목" value={form.title} onChange={e => setForm(f => ({...f, title: e.target.value}))} />
         <input className="w-full border rounded p-2" placeholder="원문 URL" value={form.sourceUrl} onChange={e => setForm(f => ({...f, sourceUrl: e.target.value}))} />
         <input className="w-full border rounded p-2" placeholder="출처 이름 (예: Product Hunt)" value={form.sourceName} onChange={e => setForm(f => ({...f, sourceName: e.target.value}))} />
+        <div className="flex items-center gap-3">
+          {form.sourceUrl && (
+            <img src={`/api/og?url=${encodeURIComponent(form.sourceUrl)}`} alt="og" className="w-10 h-10 rounded border" />
+          )}
+          <input className="flex-1 border rounded p-2" placeholder="OG 이미지 URL" value={form.ogImage} onChange={e => setForm(f => ({...f, ogImage: e.target.value}))} />
+        </div>
         <textarea className="w-full border rounded p-2" rows={3} placeholder="3문장 요약" value={form.summary3} onChange={e => setForm(f => ({...f, summary3: e.target.value}))} />
-        <input className="w-full border rounded p-2" placeholder="태그 (쉼표로 구분)" value={form.tags} onChange={e => setForm(f => ({...f, tags: e.target.value}))} />
+        <div>
+          <input className="w-full border rounded p-2" placeholder="태그 (쉼표로 구분)" value={form.tags} onChange={e => setForm(f => ({...f, tags: e.target.value}))} />
+          {loadingMeta ? (
+            <p className="text-xs text-zinc-500 mt-1">메타 데이터 불러오는 중…</p>
+          ) : suggestedTags.length > 0 ? (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {suggestedTags.map(t => (
+                <button key={t} type="button" onClick={() => setForm(f => ({ ...f, tags: Array.from(new Set((f.tags ? f.tags.split(',').map(s => s.trim()).filter(Boolean) : []).concat([t])))).join(', ') }))} className="px-2 py-0.5 text-xs rounded-full border bg-zinc-50">
+                  {t}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
         <input className="w-full border rounded p-2" type="number" min={0} max={10} placeholder="Korea Fit (0~10)" value={form.koreaFit} onChange={e => setForm(f => ({...f, koreaFit: Number(e.target.value)}))} />
         <textarea className="w-full border rounded p-2" rows={3} placeholder="Why Now" value={form.whyNow} onChange={e => setForm(f => ({...f, whyNow: e.target.value}))} />
         <textarea className="w-full border rounded p-2" rows={3} placeholder="리스크 (줄바꿈으로 구분)" value={form.risks} onChange={e => setForm(f => ({...f, risks: e.target.value}))} />
