@@ -1,6 +1,6 @@
 // app/page.tsx
 import { listIdeas } from '@/lib/db';
-import IdeaCard from '@/components/IdeaCard';
+import { IdeaCard } from '@/features/ideas';
 
 export default async function HomePage() {
   const ideas = await listIdeas();

@@ -1,4 +1,4 @@
-// components/Skeletons.tsx
+// shared/ui/components/Skeletons.tsx
 'use client';
 
 export function IdeaCardSkeleton() {

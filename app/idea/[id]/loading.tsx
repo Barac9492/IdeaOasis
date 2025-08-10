@@ -1,5 +1,5 @@
 // app/idea/[id]/loading.tsx
-import { IdeaDetailSkeleton } from '@/components/Skeletons';
+import { IdeaDetailSkeleton } from '@/shared/ui/components/Skeletons';
 
 export default function Loading() {
   return <IdeaDetailSkeleton />;

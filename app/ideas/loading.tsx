@@ -1,5 +1,5 @@
 // app/ideas/loading.tsx
-import { IdeaCardSkeleton } from '@/components/Skeletons';
+import { IdeaCardSkeleton } from '@/shared/ui/components/Skeletons';
 
 export default function Loading() {
   return (

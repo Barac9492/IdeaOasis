@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { db } from "../../lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import Link from "next/link";
-import IdeaCard from "@/components/IdeaCard";
+import { IdeaCard } from "@/features/ideas";
 
 interface FireIdea {
   id: string;

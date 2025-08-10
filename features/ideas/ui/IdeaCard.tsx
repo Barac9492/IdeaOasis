@@ -1,113 +1,204 @@
 'use client';
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useMemo, useRef, useState } from 'react';
+import type { Idea } from '@/lib/types';
+import { formatDateKR } from '@/lib/format';
 
-interface IdeaCardProps {
-  idea: {
-    id: string;
-    title: string;
-    summary: string;
-    offer?: string;
-    badges?: string[];
-    tags?: string[];
-    scorecards?: {
-      opportunity?: number;
-      problem?: number;
-      feasibility?: number;
-      whyNow?: number;
-    };
-    sourcePlatform?: string;
-    sourceURL?: string;
-    koreaFitScore?: number;
-    signals?: {
-      last7dDelta?: number;
-    };
-  };
-  onVote: (ideaId: string, up: boolean) => Promise<void>;
-  onBookmark: (ideaId: string) => Promise<void>;
-  isBookmarked?: boolean;
-  className?: string;
+function scoreBadgeColor(score: number): string {
+  if (score >= 10) return 'bg-green-100 text-green-700 border-green-200';
+  if (score >= 1) return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+  if (score <= -10) return 'bg-red-100 text-red-700 border-red-200';
+  if (score < 0) return 'bg-rose-50 text-rose-700 border-rose-200';
+  return 'bg-zinc-100 text-zinc-700 border-zinc-200';
 }
 
-export default function IdeaCard({ 
-  idea, 
-  onVote, 
-  onBookmark, 
-  isBookmarked = false,
-  className = "" 
-}: IdeaCardProps) {
-  const delta = (idea?.signals?.last7dDelta ?? 0);
-  
+function koreaFitColor(fit: number): string {
+  if (fit >= 8) return 'bg-green-600';
+  if (fit >= 5) return 'bg-yellow-500';
+  return 'bg-red-500';
+}
+
+export default function IdeaCard({
+  idea,
+  className = '',
+  ...props
+}: { idea: Idea } & React.HTMLAttributes<HTMLDivElement>) {
+  const [showTranslated, setShowTranslated] = useState(true);
+  const [shareOpen, setShareOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const netScore = useMemo(() => {
+    const up = idea.votesUp ?? 0;
+    const down = idea.votesDown ?? 0;
+    return up - down;
+  }, [idea.votesUp, idea.votesDown]);
+
+  const tags = idea.tags ?? [];
+  const visibleTags = tags.slice(0, 3);
+  const extraTags = Math.max(0, tags.length - visibleTags.length);
+
+  const imgSrc = idea.sourceUrl ? `/api/og?url=${encodeURIComponent(idea.sourceUrl)}` : undefined;
+
+  function copyLink() {
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/idea/${idea.id}` : '';
+    if (!url) return;
+    navigator.clipboard.writeText(url);
+    setShareOpen(false);
+  }
+
+  function openTwitter() {
+    const text = encodeURIComponent(idea.title || 'Idea');
+    const url = typeof window !== 'undefined' ? encodeURIComponent(`${window.location.origin}/idea/${idea.id}`) : '';
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+    setShareOpen(false);
+  }
+
+  function onRipple(e: React.MouseEvent) {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'absolute inset-0 pointer-events-none overflow-hidden rounded-2xl';
+    const dot = document.createElement('span');
+    dot.className = 'absolute rounded-full bg-zinc-300 opacity-40 scale-0';
+    const size = Math.max(rect.width, rect.height) * 1.2;
+    dot.style.width = `${size}px`;
+    dot.style.height = `${size}px`;
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+    dot.style.left = `${x}px`;
+    dot.style.top = `${y}px`;
+    dot.style.transition = 'transform 500ms ease-out, opacity 700ms ease-out';
+    ripple.appendChild(dot);
+    el.appendChild(ripple);
+    requestAnimationFrame(() => {
+      dot.style.transform = 'scale(1)';
+      dot.style.opacity = '0';
+    });
+    setTimeout(() => {
+      el.removeChild(ripple);
+    }, 800);
+  }
+
   return (
-    <article className={`p-4 border rounded-lg ${className}`}>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <Link href={`/idea/${idea.id}`} className="font-semibold text-lg hover:underline">
-            {idea.title}
-          </Link>
-          <p className="text-sm text-zinc-600 mt-1">{idea.summary}</p>
-          
-          {/* offer 한 줄 */}
-          {idea.offer && (
-            <p className="text-sm text-gray-800 mt-1">{idea.offer}</p>
-          )}
-          
-          {/* 배지 3개 */}
-          <div className="flex flex-wrap gap-1 mt-2">
-            {(idea.badges ?? []).slice(0, 3).map((b, idx) => (
-              <span key={`badge-${idx}`} className="px-2 py-0.5 text-xs rounded-full bg-gray-100 border">
-                {b}
-              </span>
-            ))}
-            {(idea.tags ?? []).slice(0, 3).map((t, idx) => (
-              <span key={`tag-${idx}`} className="px-2 py-0.5 text-xs rounded-full bg-blue-50 border border-blue-200">
-                #{t}
-              </span>
-            ))}
+    <div
+      ref={cardRef}
+      onClick={onRipple}
+      className={`relative rounded-2xl border p-4 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg bg-white ${className}`}
+      {...props}
+    >
+      <div className="flex items-start gap-3">
+        {imgSrc && (
+          <div className="relative shrink-0 w-16 h-16 rounded-xl overflow-hidden border bg-zinc-50">
+            <img src={imgSrc} alt="thumbnail" className="w-full h-full object-cover" />
           </div>
-          
-          {/* 간이 점수 */}
-          {idea.scorecards?.opportunity != null && (
-            <div className="text-xs text-gray-500 mt-1">
-              Opportunity: <span className="font-semibold">{idea.scorecards.opportunity}/10</span>
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-lg font-semibold line-clamp-2">
+              <Link href={`/idea/${idea.id}`}>{idea.title}</Link>
+            </h3>
+            <span
+              className={`text-xs rounded-full px-2 py-1 border ${scoreBadgeColor(netScore)}`}
+              title="Net votes"
+            >
+              {netScore >= 0 ? `+${netScore}` : `${netScore}`}
+            </span>
+          </div>
+
+          {idea.offer && (
+            <p className="mt-2 text-sm text-zinc-900 font-medium line-clamp-2">{idea.offer}</p>
+          )}
+
+          {idea.summary3 && (
+            <p className="mt-1 text-sm text-zinc-700 line-clamp-3">
+              {showTranslated ? idea.summary3 : idea.longSummary || idea.summary3}
+            </p>
+          )}
+
+          {idea.whyNow && (
+            <div className="mt-2 flex items-start gap-1.5 text-xs text-zinc-600">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span className="line-clamp-2">{idea.whyNow}</span>
             </div>
           )}
-          
-          <div className="text-xs text-zinc-500 mt-2">
-            <span className="mr-2">Source: {idea.sourcePlatform || "-"}</span>
-            {idea.sourceURL && (
-              <a className="underline mr-2" href={idea.sourceURL} target="_blank">
-                원문
-              </a>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
+            {visibleTags.map((t) => (
+              <span key={t} className="rounded-full bg-zinc-100 px-2 py-0.5 border border-zinc-200">{t}</span>
+            ))}
+            {extraTags > 0 && (
+              <span className="rounded-full bg-zinc-50 px-2 py-0.5 border border-zinc-200">+{extraTags}</span>
             )}
-            <span className="mr-2">Korea Fit: {idea.koreaFitScore ?? "-"}/5</span>
-            <span>최근7일: {delta >= 0 ? "+" : ""}{delta}</span>
+            {idea.publishedAt && <span className="ml-auto">{formatDateKR(idea.publishedAt)}</span>}
+            <span>
+              · {(idea.sourceUrl ? (() => { try { return new URL(idea.sourceUrl).hostname.replace(/^www\./,''); } catch { return idea.sourceName || ''; } })() : (idea.sourceName || ''))}
+            </span>
           </div>
-        </div>
-        
-        <div className="flex flex-col gap-2 items-end">
-          <div className="flex gap-2">
-            <button 
-              onClick={() => onVote(idea.id, true)} 
-              className="px-3 py-1 rounded-lg border"
-            >
-              ▲
-            </button>
-            <button 
-              onClick={() => onVote(idea.id, false)} 
-              className="px-3 py-1 rounded-lg border"
-            >
-              ▼
-            </button>
+
+          <div className="mt-2 flex items-center gap-2 text-xs text-zinc-700">
+            {typeof idea.effort === 'number' && (
+              <span className="inline-flex items-center gap-1 rounded-full border bg-zinc-50 px-2 py-0.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3v12"/><path d="M18 3v18"/><path d="M12 3v8"/></svg>
+                Effort {Math.max(1, Math.min(5, idea.effort))}/5
+              </span>
+            )}
+            {Array.isArray(idea.risks) && idea.risks.length > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full border bg-zinc-50 px-2 py-0.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Risks {idea.risks.length}
+              </span>
+            )}
           </div>
-          <button 
-            onClick={() => onBookmark(idea.id)} 
-            className="text-xs underline"
-          >
-            {isBookmarked ? "★ 북마크됨" : "☆ 북마크"}
-          </button>
+
+          {typeof idea.koreaFit === 'number' && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span className="rounded-full bg-zinc-100 px-2 py-0.5 border border-zinc-200">Korea Fit</span>
+                <span className="text-zinc-700 font-medium">{idea.koreaFit}/10</span>
+              </div>
+              <div className="h-2 rounded-full bg-zinc-100 overflow-hidden">
+                <div
+                  className={`h-full ${koreaFitColor(idea.koreaFit)}`}
+                  style={{ width: `${Math.max(0, Math.min(10, idea.koreaFit)) * 10}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <Link href={`/idea/${idea.id}`} className="rounded-full bg-black text-white px-3 py-1">자세히 보기</Link>
+            <button className="rounded-full border px-3 py-1 flex items-center gap-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-5 5-3-3"/><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0"/></svg>
+              공감
+            </button>
+            <button className="rounded-full border px-3 py-1 flex items-center gap-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 15l5-5 3 3"/><path d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0"/></svg>
+              비공감
+            </button>
+            <button className="rounded-full border px-3 py-1 flex items-center gap-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              북마크
+            </button>
+            <div className="relative ml-auto">
+              <button onClick={() => setShareOpen((v) => !v)} className="rounded-full border px-3 py-1 flex items-center gap-1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98"/><path d="M15.41 6.51L8.59 10.49"/></svg>
+                공유
+              </button>
+              {shareOpen && (
+                <div className="absolute right-0 mt-1 w-40 rounded-lg border bg-white shadow-lg z-10">
+                  <button onClick={openTwitter} className="w-full text-left px-3 py-2 hover:bg-zinc-50">X (Twitter)</button>
+                  <a className="block px-3 py-2 hover:bg-zinc-50" href={`https://story.kakao.com/share?url=${typeof window !== 'undefined' ? encodeURIComponent(`${window.location.origin}/idea/${idea.id}`) : ''}`} target="_blank">Kakao</a>
+                  <button onClick={copyLink} className="w-full text-left px-3 py-2 hover:bg-zinc-50">링크 복사</button>
+                </div>
+              )}
+            </div>
+            <label className="ml-2 flex items-center gap-1 text-xs cursor-pointer select-none">
+              <input type="checkbox" className="accent-black" checked={showTranslated} onChange={(e) => setShowTranslated(e.target.checked)} /> 번역
+            </label>
+          </div>
         </div>
       </div>
-    </article>
+    </div>
   );
 }
