@@ -149,6 +149,10 @@ export default function Top() {
                     koreaFit: (i.koreaFitScore as number) ?? (i.koreaFit as number),
                     votesUp: i.votesUp as number,
                     votesDown: i.votesDown as number,
+                    offer: (i as any).offer,
+                    whyNow: (i as any).whyNow,
+                    effort: (i as any).effort,
+                    risks: (i as any).risks,
                   }}
                 />
               ))}
@@ -173,6 +177,10 @@ export default function Top() {
                   koreaFit: (i.koreaFitScore as number) ?? (i.koreaFit as number),
                   votesUp: i.votesUp as number,
                   votesDown: i.votesDown as number,
+                  offer: (i as any).offer,
+                  whyNow: (i as any).whyNow,
+                  effort: (i as any).effort,
+                  risks: (i as any).risks,
                 }}
               />
             ))}

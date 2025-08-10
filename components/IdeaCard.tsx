@@ -102,10 +102,21 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
             </span>
           </div>
 
+          {idea.offer && (
+            <p className="mt-2 text-sm text-zinc-900 font-medium line-clamp-2">{idea.offer}</p>
+          )}
+
           {idea.summary3 && (
-            <p className="mt-2 text-sm text-zinc-700 line-clamp-3">
+            <p className="mt-1 text-sm text-zinc-700 line-clamp-3">
               {showTranslated ? idea.summary3 : idea.longSummary || idea.summary3}
             </p>
+          )}
+
+          {idea.whyNow && (
+            <div className="mt-2 flex items-start gap-1.5 text-xs text-zinc-600">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span className="line-clamp-2">{idea.whyNow}</span>
+            </div>
           )}
 
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
@@ -116,7 +127,24 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
               <span className="rounded-full bg-zinc-50 px-2 py-0.5 border border-zinc-200">+{extraTags}</span>
             )}
             {idea.publishedAt && <span className="ml-auto">{formatDateKR(idea.publishedAt)}</span>}
-            {idea.sourceName && <span>· {idea.sourceName}</span>}
+            <span>
+              · {(idea.sourceUrl ? (() => { try { return new URL(idea.sourceUrl).hostname.replace(/^www\./,''); } catch { return idea.sourceName || ''; } })() : (idea.sourceName || ''))}
+            </span>
+          </div>
+
+          <div className="mt-2 flex items-center gap-2 text-xs text-zinc-700">
+            {typeof idea.effort === 'number' && (
+              <span className="inline-flex items-center gap-1 rounded-full border bg-zinc-50 px-2 py-0.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3v12"/><path d="M18 3v18"/><path d="M12 3v8"/></svg>
+                Effort {Math.max(1, Math.min(5, idea.effort))}/5
+              </span>
+            )}
+            {Array.isArray(idea.risks) && idea.risks.length > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full border bg-zinc-50 px-2 py-0.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Risks {idea.risks.length}
+              </span>
+            )}
           </div>
 
           {typeof idea.koreaFit === 'number' && (
@@ -134,7 +162,8 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
             </div>
           )}
 
-          <div className="mt-3 flex items-center gap-2 text-sm">
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <Link href={`/idea/${idea.id}`} className="rounded-full bg-black text-white px-3 py-1">자세히 보기</Link>
             <button className="rounded-full border px-3 py-1 flex items-center gap-1">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-5 5-3-3"/><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0"/></svg>
               공감
