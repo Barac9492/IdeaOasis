@@ -7,16 +7,21 @@ import { ExternalLink, Heart, Bookmark, TrendingUp, Target } from 'lucide-react'
 
 export default function IdeaCard({ idea }: { idea: Idea }) {
   return (
-    <div className="rounded-2xl p-6 hover:shadow-md transition-all duration-300 group">
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <h3 className="text-xl font-semibold text-slate-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
-          <Link href={`/ideas/${idea.id}`}>{idea.title}</Link>
-        </h3>
+    <div className="rounded-2xl p-6 hover:shadow-md transition-all duration-300 group h-full flex flex-col">
+      {/* Header with title and badge */}
+      <div className="mb-4">
         {typeof idea.koreaFit === 'number' && (
-          <span className="text-xs font-medium rounded-full px-3 py-1 bg-blue-100 text-blue-700 whitespace-nowrap">
-            {`한국 적합도 ${Math.round(idea.koreaFit * 10) / 10}/10`}
-          </span>
+          <div className="flex justify-end mb-2">
+            <span className="text-xs font-medium rounded-full px-3 py-1 bg-blue-100 text-blue-700">
+              한국 적합도 {Math.round(idea.koreaFit * 10) / 10}/10
+            </span>
+          </div>
         )}
+        <h3 className="text-xl font-semibold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">
+          <Link href={`/ideas/${idea.id}`} className="block">
+            {idea.title}
+          </Link>
+        </h3>
       </div>
 
       {idea.summary3 && (
@@ -36,27 +41,29 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
 
       {/* Enhanced metrics */}
       {(idea.trendData?.trendScore || idea.metrics) && (
-        <div className="flex items-center gap-3 text-xs text-slate-500 mb-3 p-2 bg-slate-50 rounded-lg">
-          {idea.trendData?.trendScore && (
-            <div className="flex items-center gap-1">
-              <TrendingUp className="w-3 h-3 text-emerald-600" />
-              <span>트렌드 {idea.trendData.trendScore}/100</span>
-            </div>
-          )}
-          {idea.trendData?.growth && (
-            <div className="flex items-center gap-1">
-              <span className={`font-medium ${idea.trendData.growth.startsWith('+') ? 'text-emerald-600' : 'text-red-500'}`}>
-                {idea.trendData.growth}
-              </span>
-              <span>성장률</span>
-            </div>
-          )}
-          {idea.metrics?.marketOpportunity && (
-            <div className="flex items-center gap-1">
-              <Target className="w-3 h-3 text-blue-600" />
-              <span>기회도 {Math.round(idea.metrics.marketOpportunity)}/10</span>
-            </div>
-          )}
+        <div className="mb-4 p-3 bg-slate-50 rounded-lg">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
+            {idea.trendData?.trendScore && (
+              <div className="flex items-center gap-1">
+                <TrendingUp className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+                <span className="whitespace-nowrap">트렌드 {idea.trendData.trendScore}/100</span>
+              </div>
+            )}
+            {idea.trendData?.growth && (
+              <div className="flex items-center gap-1">
+                <span className={`font-medium whitespace-nowrap ${idea.trendData.growth.startsWith('+') ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {idea.trendData.growth}
+                </span>
+                <span>성장</span>
+              </div>
+            )}
+            {idea.metrics?.marketOpportunity && (
+              <div className="flex items-center gap-1">
+                <Target className="w-3 h-3 text-blue-600 flex-shrink-0" />
+                <span className="whitespace-nowrap">기회도 {Math.round(idea.metrics.marketOpportunity)}/10</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -71,27 +78,29 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1 text-sm text-slate-600 hover:text-red-500 transition-colors">
-            <Heart className="w-4 h-4" />
-            <span>공감</span>
-          </button>
-          <button className="flex items-center gap-1 text-sm text-slate-600 hover:text-blue-500 transition-colors">
-            <Bookmark className="w-4 h-4" />
-            <span>저장</span>
-          </button>
+      {/* Actions - pushed to bottom with mt-auto */}
+      <div className="mt-auto pt-4 border-t border-slate-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-1 text-sm text-slate-600 hover:text-red-500 transition-colors p-1">
+              <Heart className="w-4 h-4" />
+              <span>공감</span>
+            </button>
+            <button className="flex items-center gap-1 text-sm text-slate-600 hover:text-blue-500 transition-colors p-1">
+              <Bookmark className="w-4 h-4" />
+              <span>저장</span>
+            </button>
+          </div>
+          <a 
+            href={idea.sourceUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900 transition-colors p-1"
+          >
+            <span>원문</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
         </div>
-        <a 
-          href={idea.sourceUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900 transition-colors"
-        >
-          <span>원문 보기</span>
-          <ExternalLink className="w-4 h-4" />
-        </a>
       </div>
     </div>
   );
