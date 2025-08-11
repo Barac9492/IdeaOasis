@@ -12,17 +12,11 @@ export async function POST() {
       );
     }
     
-    const ideas = await seedDatabase();
+    await seedDatabase();
     
     return NextResponse.json({
       success: true,
-      message: 'Database seeded successfully',
-      count: ideas.length,
-      ideas: ideas.map(idea => ({
-        id: idea.id,
-        title: idea.title,
-        sector: idea.sector
-      }))
+      message: 'Database seeded successfully'
     });
     
   } catch (error) {

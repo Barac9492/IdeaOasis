@@ -1,6 +1,6 @@
 // app/api/demo/route.ts
 import { NextResponse } from 'next/server';
-import { seedDatabase, sampleIdeas } from '@/lib/seedData';
+import { seedDatabase, realBusinessIdeas } from '@/lib/seedData';
 import { KoreaFitAnalyzer } from '@/lib/services/koreaFitAnalyzer';
 import { TrendAnalyzer } from '@/lib/services/trendAnalyzer';
 import { RoadmapGenerator } from '@/lib/services/roadmapGenerator';
@@ -13,7 +13,7 @@ export async function GET() {
     await seedDatabase();
     
     // Take the first idea and demonstrate all services
-    const sampleIdea = sampleIdeas[0];
+    const sampleIdea = realBusinessIdeas[0];
     
     // 1. Korea Fit Analysis
     const koreaFitResult = KoreaFitAnalyzer.calculateKoreaFit(sampleIdea);
@@ -87,7 +87,7 @@ export async function GET() {
         enhancedMetrics: enhancedIdea.metrics
       },
       message: '모든 백엔드 서비스가 성공적으로 동작합니다! 한국 시장 맞춤 분석, 트렌드 분석, 실행 로드맵이 완성되었습니다.',
-      seededIdeas: sampleIdeas.length,
+      seededIdeas: realBusinessIdeas.length,
       apiEndpoints: {
         vote: '/api/vote',
         bookmark: '/api/bookmark', 
