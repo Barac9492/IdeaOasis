@@ -6,11 +6,75 @@ import { Button } from '@/components/ui/button'; // shadcn
 import { Card } from '@/components/ui/card';
 
 export default async function HomePage({ searchParams }: { searchParams: { category?: string } }) {
-  const ideas = await listIdeas(); // Server-side fetch
+  // Import required services
+  const { seedDatabase } = await import('@/lib/seedData');
+  const { KoreaFitAnalyzer } = await import('@/lib/services/koreaFitAnalyzer');
+  const { TrendAnalyzer } = await import('@/lib/services/trendAnalyzer');
+  const { upsertIdeas } = await import('@/lib/db');
+  
+  let ideas = await listIdeas();
+  
+  // If no ideas exist, seed the database with sample data
+  if (ideas.length === 0) {
+    console.log('No ideas found, seeding database...');
+    await seedDatabase();
+    ideas = await listIdeas();
+  }
+  
+  // Enhance ideas with Korea Fit and trend data if not already enhanced
+  const enhancedIdeas = await Promise.all(
+    ideas.map(async (idea) => {
+      // Skip if already enhanced (has koreaFit score)
+      if (idea.koreaFit !== undefined && idea.trendData?.trendScore) {
+        return idea;
+      }
+      
+      try {
+        // Korea Fit Analysis
+        const koreaFitResult = KoreaFitAnalyzer.calculateKoreaFit(idea);
+        
+        // Trend Analysis
+        const trendAnalysis = await TrendAnalyzer.analyzeTrends(idea);
+        const trendScore = TrendAnalyzer.calculateTrendScore(trendAnalysis);
+        
+        // Enhanced idea with all data
+        const enhanced = {
+          ...idea,
+          koreaFit: koreaFitResult.score,
+          trendData: {
+            keyword: trendAnalysis.keyword,
+            growth: `${trendAnalysis.growthRate > 0 ? '+' : ''}${trendAnalysis.growthRate}%`,
+            monthlySearches: trendAnalysis.searchVolume.toLocaleString(),
+            trendScore,
+            lastUpdated: trendAnalysis.lastAnalyzed
+          },
+          metrics: {
+            marketOpportunity: koreaFitResult.factors.marketReadiness,
+            executionDifficulty: 10 - koreaFitResult.factors.businessInfrastructure,
+            revenuePotential: koreaFitResult.factors.culturalAlignment,
+            timingScore: koreaFitResult.factors.marketReadiness,
+            regulatoryRisk: 10 - koreaFitResult.factors.regulatoryFriendliness
+          },
+          updatedAt: new Date().toISOString()
+        };
+        
+        return enhanced;
+      } catch (error) {
+        console.error(`Failed to enhance idea ${idea.id}:`, error);
+        return idea; // Return original if enhancement fails
+      }
+    })
+  );
+  
+  // Update database with enhanced ideas (only the ones that were actually enhanced)
+  const toUpdate = enhancedIdeas.filter(idea => idea.koreaFit !== undefined);
+  if (toUpdate.length > 0) {
+    await upsertIdeas(toUpdate);
+  }
 
   // Simple server-side filtering example (expand as needed)
   const category = searchParams.category || '';
-  const filteredIdeas = category ? ideas.filter(i => i.sector === category) : ideas;
+  const filteredIdeas = category ? enhancedIdeas.filter(i => i.sector === category) : enhancedIdeas;
 
   // Featured: highest koreaFit or similar
   const todaysIdea = filteredIdeas.reduce((prev, curr) => 

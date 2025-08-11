@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { Idea } from '@/lib/types';
 import { formatDateKR } from '@/lib/format';
-import { ExternalLink, Heart, Bookmark } from 'lucide-react';
+import { ExternalLink, Heart, Bookmark, TrendingUp, Target } from 'lucide-react';
 
 export default function IdeaCard({ idea }: { idea: Idea }) {
   return (
@@ -14,7 +14,7 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
         </h3>
         {typeof idea.koreaFit === 'number' && (
           <span className="text-xs font-medium rounded-full px-3 py-1 bg-blue-100 text-blue-700 whitespace-nowrap">
-            {`한국 적합도 ${idea.koreaFit}/10`}
+            {`한국 적합도 ${Math.round(idea.koreaFit * 10) / 10}/10`}
           </span>
         )}
       </div>
@@ -33,6 +33,32 @@ export default function IdeaCard({ idea }: { idea: Idea }) {
           </span>
         ))}
       </div>
+
+      {/* Enhanced metrics */}
+      {(idea.trendData?.trendScore || idea.metrics) && (
+        <div className="flex items-center gap-3 text-xs text-slate-500 mb-3 p-2 bg-slate-50 rounded-lg">
+          {idea.trendData?.trendScore && (
+            <div className="flex items-center gap-1">
+              <TrendingUp className="w-3 h-3 text-emerald-600" />
+              <span>트렌드 {idea.trendData.trendScore}/100</span>
+            </div>
+          )}
+          {idea.trendData?.growth && (
+            <div className="flex items-center gap-1">
+              <span className={`font-medium ${idea.trendData.growth.startsWith('+') ? 'text-emerald-600' : 'text-red-500'}`}>
+                {idea.trendData.growth}
+              </span>
+              <span>성장률</span>
+            </div>
+          )}
+          {idea.metrics?.marketOpportunity && (
+            <div className="flex items-center gap-1">
+              <Target className="w-3 h-3 text-blue-600" />
+              <span>기회도 {Math.round(idea.metrics.marketOpportunity)}/10</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Meta info */}
       <div className="flex items-center gap-3 text-sm text-slate-500 mb-4">
