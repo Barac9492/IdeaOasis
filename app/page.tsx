@@ -51,7 +51,7 @@ export default async function HomePage({ searchParams }: { searchParams: { categ
             <div className="pt-12 flex items-center justify-center gap-8 text-sm text-slate-500">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-blue-600" />
-                <span>네이버 트렌드 분석</span>
+                <span>검색 트렌드 분석</span>
               </div>
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-emerald-600" />
@@ -104,7 +104,7 @@ export default async function HomePage({ searchParams }: { searchParams: { categ
                 <TrendingUp className="w-8 h-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold text-slate-900 mb-3">트렌드 분석</h3>
-              <p className="text-slate-600">네이버 검색 트렌드와 소셜 미디어 데이터로 시장 관심도를 실시간 측정합니다</p>
+              <p className="text-slate-600">검색 트렌드와 소셜 미디어 데이터로 시장 관심도를 실시간 측정합니다</p>
             </div>
             
             <div className="text-center group">
@@ -181,7 +181,7 @@ export default async function HomePage({ searchParams }: { searchParams: { categ
             <div className="text-center">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-lg font-semibold text-white mb-2">심층 데이터</h3>
-              <p className="text-slate-400">네이버 트렌드, 시장 기회 점수</p>
+              <p className="text-slate-400">검색 트렌드, 시장 기회 점수</p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🚀</div>
