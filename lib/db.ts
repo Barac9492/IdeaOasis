@@ -21,12 +21,28 @@ async function ensureSeeded(): Promise<void> {
     // Import seed data dynamically to avoid circular dependency
     const { realBusinessIdeas } = await import('./seedData');
     const { enhanceIdeasWithScores } = await import('./enhanceIdeas');
+    const { enhanceIdeasWithRoadmaps } = await import('./services/roadmapEnhancer');
+    const { ContentQualityMonitor } = await import('./services/contentQualityMonitor');
     
-    // Enhance ideas with proper Korea Fit scores and trend data
-    const enhancedIdeas = enhanceIdeasWithScores(realBusinessIdeas);
+    // Step 1: Auto-fix any broken Korean or content issues
+    const fixedIdeas = realBusinessIdeas.map(idea => ContentQualityMonitor.autoFixIdea(idea));
+    
+    // Step 2: Enhance ideas with proper Korea Fit scores and trend data
+    const scoredIdeas = enhanceIdeasWithScores(fixedIdeas);
+    
+    // Step 3: Add differentiated roadmaps
+    const enhancedIdeas = enhanceIdeasWithRoadmaps(scoredIdeas);
+    
+    // Step 4: Final quality check
+    const { summary } = ContentQualityMonitor.validateAllIdeas(enhancedIdeas);
+    
+    if (summary.errors > 0) {
+      console.warn(`Warning: ${summary.errors} quality errors found in seed data`);
+    }
+    
     await upsertIdeas(enhancedIdeas);
     isSeeded = true;
-    console.log('Database auto-seeded with enhanced business ideas');
+    console.log(`Database seeded: ${enhancedIdeas.length} ideas, Quality Score: ${summary.averageScore.toFixed(1)}/100`);
   } catch (error) {
     console.warn('Failed to auto-seed database:', error);
   }

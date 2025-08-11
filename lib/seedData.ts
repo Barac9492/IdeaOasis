@@ -65,7 +65,7 @@ export const realBusinessIdeas: Idea[] = [
   },
   {
     id: 'idea-003',
-    title: '노시니어 대상 AI 동반자 및 케어 서비스',
+    title: '시니어 대상 AI 동반자 및 케어 서비스',
     sourceUrl: 'https://www.papa.com/',
     sourceName: 'Papa',
     publishedAt: '2024-12-05T11:45:00Z',
