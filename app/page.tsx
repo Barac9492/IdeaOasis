@@ -211,7 +211,7 @@ export default async function HomePage({ searchParams }: { searchParams: { categ
               <p className="text-slate-600 text-lg">곧 흥미로운 비즈니스 아이디어들을 만나보실 수 있습니다</p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 idea-card-grid">
+            <div className="grid gap-6 lg:grid-cols-2 idea-card-grid">
               {filteredIdeas.slice(0, 6).map((idea) => (
                 <div key={idea.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-shadow h-full">
                   <IdeaCard idea={idea} />
