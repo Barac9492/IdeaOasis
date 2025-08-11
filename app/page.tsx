@@ -1,17 +1,17 @@
 // app/page.tsx - Landing Page (Server Component)
 import { listIdeas } from '@/lib/db';
-import IdeaCard from '@/features/ideas/ui/IdeaCard'; // From features
-import IdeaFilters from '@/features/ideas/ui/IdeaFilters'; // Assume created in features
+import IdeaCard from '@/components/IdeaCard'; // Use the main IdeaCard component
+// import IdeaFilters from '@/features/ideas/ui/IdeaFilters'; // TODO: Fix component compatibility
 import { Star, TrendingUp, Target, Zap } from 'lucide-react'; // Icons
 import { Button } from '@/components/ui/button'; // shadcn
 import { Card, CardContent } from '@/components/ui/card';
 
-export default async function HomePage({ searchParams }) {
+export default async function HomePage({ searchParams }: { searchParams: { category?: string } }) {
   const ideas = await listIdeas(); // Server-side fetch
 
   // Simple server-side filtering example (expand as needed)
   const category = searchParams.category || '';
-  const filteredIdeas = category ? ideas.filter(i => i.category === category) : ideas;
+  const filteredIdeas = category ? ideas.filter(i => i.sector === category) : ideas;
 
   // Featured: highest koreaFit or similar
   const todaysIdea = filteredIdeas.reduce((prev, curr) => 
@@ -74,7 +74,7 @@ export default async function HomePage({ searchParams }) {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 rounded-3xl" />
                 <Card className="relative rounded-3xl p-8 shadow-lg border-2 border-primary/10">
-                  <IdeaCard idea={todaysIdea} featured={true} />
+                  <IdeaCard idea={todaysIdea} />
                 </Card>
               </div>
             ) : (
@@ -88,8 +88,8 @@ export default async function HomePage({ searchParams }) {
       <section className="pb-20">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            {/* Filters - Client component */}
-            <IdeaFilters initialFilters={{ category: '' }} />
+            {/* Filters - TODO: Fix component compatibility */}
+            {/* <IdeaFilters initialFilters={{ category: '', difficulty: '', access: '', source: '', sortBy: '' }} /> */}
 
             {/* Market Insights Banner */}
             <div className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">

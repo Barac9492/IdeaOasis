@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     tags: it.tags || [],
     koreaFit: typeof it.koreaFit === 'number' ? it.koreaFit : undefined,
     whyNow: it.whyNow ? it.whyNow.join('\n') : '', // If array in payload
-    risks: Array.isArray(it.risks) ? it.risks : (it.risks ? it.risks.split('\n').map(r => r.trim()) : []),
+    risks: Array.isArray(it.risks) ? it.risks : (it.risks ? it.risks.split('\n').map((r: string) => r.trim()) : []),
     // New fields from Figma mock
     metrics: it.metrics || { marketOpportunity: 0, executionDifficulty: 0, revenuePotential: 0, timingScore: 0, regulatoryRisk: 0 },
     partnershipStrategy: Array.isArray(it.partnershipStrategy) ? it.partnershipStrategy : [],
