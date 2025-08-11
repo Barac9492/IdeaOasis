@@ -20,6 +20,22 @@ export const realBusinessIdeas: Idea[] = [
       '의료기기법 및 건강기능식품법 규제 준수 필요',
       '초기 DNA 분석 비용으로 인한 진입 장벽'
     ],
+    koreaFit: 7.8,
+    effort: 4,
+    metrics: {
+      marketOpportunity: 8,
+      executionDifficulty: 4,
+      revenuePotential: 8,
+      timingScore: 9,
+      regulatoryRisk: 3
+    },
+    trendData: {
+      keyword: '개인맞춤형 영양관리',
+      growth: '+24.5%',
+      monthlySearches: '12,400',
+      trendScore: 8,
+      lastUpdated: '2024-12-16T10:00:00Z'
+    },
     visible: true,
     createdAt: '2024-12-16T10:00:00Z',
     votesUp: 0,

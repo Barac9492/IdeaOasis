@@ -5,11 +5,13 @@ import type { Idea } from './types';
 function generateScores(idea: Idea): {
   koreaFit: number;
   effort: number;
-  marketOpportunity: number;
-  executionDifficulty: number;
-  revenuePotential: number;
-  timingScore: number;
-  regulatoryRisk: number;
+  metrics: {
+    marketOpportunity: number;
+    executionDifficulty: number;
+    revenuePotential: number;
+    timingScore: number;
+    regulatoryRisk: number;
+  };
 } {
   // Base scores with some randomization for realism
   const baseScores = {
@@ -43,11 +45,13 @@ function generateScores(idea: Idea): {
   return {
     koreaFit: Math.max(1, Math.min(10, base.koreaFit + variation())),
     effort: Math.max(1, Math.min(5, base.effort + Math.floor(variation()))),
-    marketOpportunity: Math.max(1, Math.min(10, base.market + variation())),
-    executionDifficulty: Math.max(1, Math.min(5, base.difficulty + Math.floor(variation()))),
-    revenuePotential: Math.max(1, Math.min(10, base.revenue + variation())),
-    timingScore: Math.max(1, Math.min(10, base.timing + variation())),
-    regulatoryRisk: Math.max(1, Math.min(5, base.regulatory + Math.floor(variation())))
+    metrics: {
+      marketOpportunity: Math.max(1, Math.min(10, base.market + variation())),
+      executionDifficulty: Math.max(1, Math.min(5, base.difficulty + Math.floor(variation()))),
+      revenuePotential: Math.max(1, Math.min(10, base.revenue + variation())),
+      timingScore: Math.max(1, Math.min(10, base.timing + variation())),
+      regulatoryRisk: Math.max(1, Math.min(5, base.regulatory + Math.floor(variation())))
+    }
   };
 }
 
@@ -73,7 +77,7 @@ function generateTrendData(idea: Idea): {
     'default': idea.sector
   };
   
-  const keyword = keywords[idea.sector as keyof typeof keywords] || keywords.default;
+  const keyword = keywords[idea.sector as keyof typeof keywords] || keywords.default || '스타트업 아이디어';
   
   // Generate realistic growth rates and search volumes
   const growthRates = ['-5.2%', '+2.8%', '+8.4%', '+15.6%', '+22.1%', '+31.7%'];
@@ -106,11 +110,7 @@ export function enhanceIdeasWithScores(ideas: Idea[]): Idea[] {
       ...idea,
       koreaFit: Math.round(scores.koreaFit * 10) / 10, // Round to 1 decimal
       effort: scores.effort,
-      marketOpportunity: scores.marketOpportunity,
-      executionDifficulty: scores.executionDifficulty,
-      revenuePotential: scores.revenuePotential,
-      timingScore: scores.timingScore,
-      regulatoryRisk: scores.regulatoryRisk,
+      metrics: scores.metrics,
       trendData
     };
   });
