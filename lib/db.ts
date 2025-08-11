@@ -1,17 +1,35 @@
 // lib/db.ts
 import type { Idea } from './types';
 
-const inMemory: Idea[] = [];
+// Import the seed data directly
+let inMemory: Idea[] = [];
+let isSeeded = false;
 
 const useFirestore = !!process.env.NEXT_PUBLIC_USE_FIRESTORE;
 
+// Auto-seed function
+async function ensureSeeded(): Promise<void> {
+  if (isSeeded) return;
+  
+  try {
+    // Import seed data dynamically to avoid circular dependency
+    const { realBusinessIdeas } = await import('./seedData');
+    await upsertIdeas(realBusinessIdeas);
+    isSeeded = true;
+  } catch (error) {
+    console.warn('Failed to auto-seed database:', error);
+  }
+}
+
 export async function listIdeas(): Promise<Idea[]> {
+  await ensureSeeded();
   if (!useFirestore) return inMemory.filter(i => i.visible !== false);
   // TODO: Firestore 연결 시 여기로 교체
   return inMemory;
 }
 
 export async function getIdea(id: string): Promise<Idea | null> {
+  await ensureSeeded();
   if (!useFirestore) return inMemory.find(i => i.id === id) ?? null;
   return inMemory.find(i => i.id === id) ?? null;
 }
