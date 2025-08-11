@@ -5,6 +5,12 @@ import type { Idea } from './types';
 let inMemory: Idea[] = [];
 let isSeeded = false;
 
+// Function to reset seeding state (useful for development)
+export function resetSeeding(): void {
+  inMemory.length = 0;
+  isSeeded = false;
+}
+
 const useFirestore = !!process.env.NEXT_PUBLIC_USE_FIRESTORE;
 
 // Auto-seed function
@@ -14,8 +20,13 @@ async function ensureSeeded(): Promise<void> {
   try {
     // Import seed data dynamically to avoid circular dependency
     const { realBusinessIdeas } = await import('./seedData');
-    await upsertIdeas(realBusinessIdeas);
+    const { enhanceIdeasWithScores } = await import('./enhanceIdeas');
+    
+    // Enhance ideas with proper Korea Fit scores and trend data
+    const enhancedIdeas = enhanceIdeasWithScores(realBusinessIdeas);
+    await upsertIdeas(enhancedIdeas);
     isSeeded = true;
+    console.log('Database auto-seeded with enhanced business ideas');
   } catch (error) {
     console.warn('Failed to auto-seed database:', error);
   }

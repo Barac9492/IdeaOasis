@@ -14,15 +14,27 @@ export default function HomePage() {
   const [ideasLoading, setIdeasLoading] = useState(true);
 
   useEffect(() => {
+    // Set a timeout to prevent infinite loading if Firebase fails
+    const timeout = setTimeout(() => {
+      if (authLoading) {
+        console.warn('Firebase auth timeout - showing landing page');
+        setAuthLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
       setAuthLoading(false);
+      clearTimeout(timeout);
       if (user) {
         loadIdeas();
       }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const loadIdeas = async () => {
@@ -42,7 +54,10 @@ export default function HomePage() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">인증 상태 확인 중...</p>
+        </div>
       </div>
     );
   }
