@@ -18,4 +18,17 @@ export type Idea = {
   visible?: boolean;
   votesUp?: number;
   votesDown?: number;
+  metrics?: {
+    marketOpportunity: number;
+    executionDifficulty: number;
+    revenuePotential: number;
+    timingScore: number;
+    regulatoryRisk: number;
+  };
+  partnershipStrategy?: string[];
+  trendData?: {
+    keyword: string;
+    growth: string;
+    monthlySearches: string;
+  };
 };

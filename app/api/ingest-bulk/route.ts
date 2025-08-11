@@ -26,8 +26,12 @@ export async function POST(req: NextRequest) {
     summary3: it.summary || it.summary3 || '',
     tags: it.tags || [],
     koreaFit: typeof it.koreaFit === 'number' ? it.koreaFit : undefined,
-    whyNow: it.whyNow,
-    risks: it.risks,
+    whyNow: it.whyNow ? it.whyNow.join('\n') : '', // If array in payload
+    risks: Array.isArray(it.risks) ? it.risks : (it.risks ? it.risks.split('\n').map(r => r.trim()) : []),
+    // New fields from Figma mock
+    metrics: it.metrics || { marketOpportunity: 0, executionDifficulty: 0, revenuePotential: 0, timingScore: 0, regulatoryRisk: 0 },
+    partnershipStrategy: Array.isArray(it.partnershipStrategy) ? it.partnershipStrategy : [],
+    trendData: it.trendData || { keyword: '', growth: '', monthlySearches: '' },
     effort: it.effort,
     visible: true,
     createdAt: new Date().toISOString(),
