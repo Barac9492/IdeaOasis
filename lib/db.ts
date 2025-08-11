@@ -42,3 +42,12 @@ export async function createIdea(manual: Omit<Idea, 'id'>): Promise<Idea> {
   inMemory.unshift(idea);
   return idea;
 }
+
+export async function updateIdea(id: string, updates: Partial<Idea>): Promise<Idea | null> {
+  const idx = inMemory.findIndex(x => x.id === id);
+  if (idx >= 0) {
+    inMemory[idx] = { ...inMemory[idx], ...updates, updatedAt: new Date().toISOString() };
+    return inMemory[idx];
+  }
+  return null;
+}

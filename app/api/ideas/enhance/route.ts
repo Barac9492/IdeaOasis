@@ -8,12 +8,68 @@ import type { Idea } from '@/lib/types';
 
 export async function POST(req: NextRequest) {
   try {
-    const { ideaId, features } = await req.json();
+    // Handle both single idea enhancement and bulk enhancement
+    const body = await req.json().catch(() => ({}));
+    const { ideaId, features } = body;
     
+    // If no ideaId provided, do bulk enhancement (for admin dashboard)
     if (!ideaId) {
-      return NextResponse.json({ error: 'ideaId is required' }, { status: 400 });
+      const ideas = await listIdeas();
+      let enhanced = 0;
+      const total = ideas.length;
+      
+      const enhancedIdeas = await Promise.all(
+        ideas.map(async (idea) => {
+          // Skip if already enhanced
+          if (idea.koreaFit !== undefined && idea.trendData?.trendScore) {
+            return idea;
+          }
+          
+          try {
+            const koreaFitResult = KoreaFitAnalyzer.calculateKoreaFit(idea);
+            const trendAnalysis = await TrendAnalyzer.analyzeTrends(idea);
+            const trendScore = TrendAnalyzer.calculateTrendScore(trendAnalysis);
+            
+            enhanced++;
+            
+            return {
+              ...idea,
+              koreaFit: koreaFitResult.score,
+              koreaFitFactors: koreaFitResult.factors,
+              koreaFitRecommendations: koreaFitResult.recommendations,
+              trendData: {
+                keyword: trendAnalysis.keyword,
+                growth: `${trendAnalysis.growthRate > 0 ? '+' : ''}${trendAnalysis.growthRate}%`,
+                monthlySearches: trendAnalysis.searchVolume.toLocaleString(),
+                trendScore,
+                lastUpdated: trendAnalysis.lastAnalyzed
+              },
+              metrics: {
+                marketOpportunity: koreaFitResult.factors.marketReadiness,
+                executionDifficulty: 10 - koreaFitResult.factors.businessInfrastructure,
+                revenuePotential: koreaFitResult.factors.culturalAlignment,
+                timingScore: koreaFitResult.factors.marketReadiness,
+                regulatoryRisk: 10 - koreaFitResult.factors.regulatoryFriendliness
+              },
+              updatedAt: new Date().toISOString()
+            };
+          } catch (error) {
+            console.error(`Failed to enhance idea ${idea.id}:`, error);
+            return idea;
+          }
+        })
+      );
+      
+      await upsertIdeas(enhancedIdeas);
+      
+      return NextResponse.json({
+        success: true,
+        enhanced,
+        total
+      });
     }
     
+    // Single idea enhancement
     const idea = await getIdea(ideaId);
     if (!idea) {
       return NextResponse.json({ error: 'Idea not found' }, { status: 404 });
@@ -68,14 +124,14 @@ export async function POST(req: NextRequest) {
     
     // Execution Roadmap
     if (requestedFeatures.includes('roadmap')) {
-      const roadmap = RoadmapGenerator.generateRoadmap(idea);
-      enhancedIdea.executionRoadmap = roadmap;
+      const roadmap = await RoadmapGenerator.generateRoadmap(idea);
+      enhancedIdea.roadmap = roadmap;
       
       enhancements.roadmap = {
-        steps: roadmap,
-        totalSteps: roadmap.length,
-        estimatedTimeframe: '16-24주',
-        highPrioritySteps: roadmap.filter(s => s.priority === 'high').length
+        phases: roadmap.phases,
+        totalPhases: roadmap.phases?.length || 0,
+        estimatedTimeframe: roadmap.totalTimeframe,
+        totalBudget: roadmap.totalBudget
       };
     }
     

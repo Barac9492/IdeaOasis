@@ -16,6 +16,25 @@ export class TrendAnalyzer {
   }
   
   /**
+   * Generates weighted random growth rate for more realistic distribution
+   */
+  private static weightedRandomGrowth(weights: Array<{ range: [number, number], weight: number }>): number {
+    const random = Math.random();
+    let cumulativeWeight = 0;
+    
+    for (const { range, weight } of weights) {
+      cumulativeWeight += weight;
+      if (random <= cumulativeWeight) {
+        const [min, max] = range;
+        return Math.round((Math.random() * (max - min) + min) * 10) / 10;
+      }
+    }
+    
+    // Fallback to moderate growth
+    return Math.round((Math.random() * 10 + 2) * 10) / 10;
+  }
+
+  /**
    * Extracts the main keyword from an idea for trend analysis
    */
   private static extractMainKeyword(idea: Idea): string {
@@ -40,7 +59,19 @@ export class TrendAnalyzer {
   private static simulateTrendData(keyword: string, idea: Idea): TrendAnalysis {
     // Base metrics influenced by idea characteristics
     let baseVolume = Math.floor(Math.random() * 50000) + 5000;
-    let baseGrowth = (Math.random() - 0.5) * 40; // -20% to +20%
+    
+    // More realistic growth rate distribution - weighted towards positive but modest growth
+    const growthWeights = [
+      { range: [-15, -10], weight: 0.05 }, // Declining markets (5%)
+      { range: [-10, -5], weight: 0.1 },   // Slow decline (10%)
+      { range: [-5, 0], weight: 0.15 },    // Stagnant (15%)
+      { range: [0, 5], weight: 0.25 },     // Slow growth (25%)
+      { range: [5, 15], weight: 0.3 },     // Moderate growth (30%)
+      { range: [15, 30], weight: 0.12 },   // High growth (12%)
+      { range: [30, 50], weight: 0.03 }    // Explosive growth (3%)
+    ];
+    
+    let baseGrowth = this.weightedRandomGrowth(growthWeights);
     
     // Adjust based on sector popularity
     const popularSectors = ['ai', '인공지능', 'food', '음식', 'health', '건강', 'delivery', '배송'];
@@ -51,13 +82,13 @@ export class TrendAnalyzer {
     
     if (popularSectors.some(s => sectorKeyword.includes(s))) {
       baseVolume *= 1.5;
-      baseGrowth += 5;
+      baseGrowth = Math.max(-5, baseGrowth + 3); // Popular sectors rarely decline
     } else if (emergingSectors.some(s => sectorKeyword.includes(s))) {
       baseVolume *= 0.7;
-      baseGrowth += 15; // High growth for emerging sectors
+      baseGrowth = Math.max(5, baseGrowth + 8); // Emerging sectors always growing
     } else if (nicheSectors.some(s => sectorKeyword.includes(s))) {
       baseVolume *= 0.4;
-      baseGrowth += 8; // Steady growth for niche
+      baseGrowth = Math.min(20, Math.max(0, baseGrowth + 2)); // Niche sectors steady but modest
     }
     
     // Add seasonality simulation
@@ -153,7 +184,21 @@ export class TrendAnalyzer {
     else if (competitionLevel === 'medium') competitionScore = 12;
     
     const totalScore = volumeScore + growthScore + competitionScore;
-    return Math.round(Math.min(100, totalScore));
+    // Normalize to 1-10 scale instead of 0-100
+    return Math.round(Math.max(1, Math.min(10, (totalScore / 100) * 10)));
+  }
+
+  /**
+   * Normalizes search volume to a 1-10 scale for consistent UI display
+   */
+  static normalizeSearchVolume(searchVolume: number): number {
+    // Convert search volume to a 1-10 scale
+    // 0-1K = 1-2, 1K-5K = 3-4, 5K-10K = 5-6, 10K-25K = 7-8, 25K+ = 9-10
+    if (searchVolume < 1000) return Math.max(1, Math.round(searchVolume / 500));
+    if (searchVolume < 5000) return Math.max(3, Math.round(3 + (searchVolume - 1000) / 2000));
+    if (searchVolume < 10000) return Math.max(5, Math.round(5 + (searchVolume - 5000) / 2500));
+    if (searchVolume < 25000) return Math.max(7, Math.round(7 + (searchVolume - 10000) / 7500));
+    return Math.min(10, Math.round(9 + (searchVolume - 25000) / 25000));
   }
   
   /**

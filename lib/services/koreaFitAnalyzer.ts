@@ -12,7 +12,7 @@ export class KoreaFitAnalyzer {
     const score = this.calculateOverallScore(factors);
     const recommendations = this.generateRecommendations(factors, idea);
     
-    return { score: Math.round(score * 10) / 10, factors, recommendations };
+    return { score: Math.round(score), factors, recommendations };
   }
   
   private static analyzeFactors(idea: Idea): KoreaFitFactors {
@@ -45,7 +45,7 @@ export class KoreaFitAnalyzer {
       score += 1;
     }
     
-    return Math.max(1, Math.min(10, score));
+    return Math.round(Math.max(1, Math.min(10, score)));
   }
   
   private static assessCulturalAlignment(idea: Idea): number {
@@ -70,7 +70,7 @@ export class KoreaFitAnalyzer {
       score += 1;
     }
     
-    return Math.max(1, Math.min(10, score));
+    return Math.round(Math.max(1, Math.min(10, score)));
   }
   
   private static assessMarketReadiness(idea: Idea): number {
@@ -92,7 +92,7 @@ export class KoreaFitAnalyzer {
       score += (metrics.marketOpportunity / 10) * 1.5;
     }
     
-    return Math.max(1, Math.min(10, score));
+    return Math.round(Math.max(1, Math.min(10, score)));
   }
   
   private static assessCompetitiveLandscape(idea: Idea): number {
@@ -114,7 +114,7 @@ export class KoreaFitAnalyzer {
       score += 2;
     }
     
-    return Math.max(1, Math.min(10, score));
+    return Math.round(Math.max(1, Math.min(10, score)));
   }
   
   private static assessBusinessInfrastructure(idea: Idea): number {
@@ -134,7 +134,7 @@ export class KoreaFitAnalyzer {
       score += 1;
     }
     
-    return Math.max(1, Math.min(10, score));
+    return Math.round(Math.max(1, Math.min(10, score)));
   }
   
   private static calculateOverallScore(factors: KoreaFitFactors): number {

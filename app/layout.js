@@ -1,5 +1,6 @@
 import './globals.css';
-import Nav from "@/shared/ui/components/Nav";
+import Nav from "@/components/Nav";
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata = {
   title: 'IdeaOasis',
@@ -9,9 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko">
-      <body>
-        <Nav />
-        <main className="max-w-3xl mx-auto p-4">{children}</main>
+      <body className="bg-white min-h-screen">
+        <AuthGuard>
+          {children}
+        </AuthGuard>
       </body>
     </html>
   );
