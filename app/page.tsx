@@ -1,10 +1,9 @@
 // app/page.tsx - Landing Page (Server Component)
 import { listIdeas } from '@/lib/db';
 import IdeaCard from '@/components/IdeaCard'; // Use the main IdeaCard component
-// import IdeaFilters from '@/features/ideas/ui/IdeaFilters'; // TODO: Fix component compatibility
-import { Star, TrendingUp, Target, Zap } from 'lucide-react'; // Icons
+import { ArrowRight, TrendingUp, Target, Zap, Star } from 'lucide-react'; // Icons
 import { Button } from '@/components/ui/button'; // shadcn
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 export default async function HomePage({ searchParams }: { searchParams: { category?: string } }) {
   const ideas = await listIdeas(); // Server-side fetch
@@ -19,147 +18,188 @@ export default async function HomePage({ searchParams }: { searchParams: { categ
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-32">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto space-y-8">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground tracking-tight">
-              글로벌 아이디어를<br />
-              <span className="text-primary">한국 시장에 맞게</span>
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              전 세계에서 검증된 혁신적인 비즈니스 아이디어를 한국 시장 관점에서 분석하고 데이터 기반 인사이트를 제공합니다
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Apple-inspired clean design */}
+      <section className="relative py-24 lg:py-32 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <div className="space-y-8">
+            {/* Clean, bold headline */}
+            <div className="space-y-6">
+              <h1 className="text-5xl lg:text-7xl font-semibold text-slate-900 tracking-tight leading-tight">
+                글로벌 아이디어를
+              </h1>
+              <h1 className="text-5xl lg:text-7xl font-semibold text-blue-600 tracking-tight leading-tight">
+                한국 시장에 맞게
+              </h1>
+            </div>
+            
+            {/* Simplified, cleaner subtitle */}
+            <p className="text-xl lg:text-2xl text-slate-600 max-w-3xl mx-auto font-light leading-relaxed">
+              검증된 해외 비즈니스 아이디어를 한국 문화와 시장에 맞춰 분석하고,<br />
+              데이터 기반 실행 가이드를 제공합니다.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>검색 트렌드 분석</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-secondary rounded-full" />
-                  <span>시장 기회 분석</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-chart-3 rounded-full" />
-                  <span>실행 전략 가이드</span>
-                </div>
+            
+            {/* Clean CTA */}
+            <div className="pt-8">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium rounded-full">
+                아이디어 탐색하기
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </div>
+            
+            {/* Simplified badges */}
+            <div className="pt-12 flex items-center justify-center gap-8 text-sm text-slate-500">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-blue-600" />
+                <span>네이버 트렌드 분석</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-emerald-600" />
+                <span>시장 기회 평가</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-amber-600" />
+                <span>실행 로드맵</span>
               </div>
             </div>
           </div>
         </div>
-        {/* Background decoration */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />
-        </div>
       </section>
 
-      {/* Today's Featured Idea */}
-      <section className="pb-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <Star className="text-chart-3" size={24} />
-                <h2 className="text-3xl font-bold text-foreground">오늘의 아이디어</h2>
-                <Star className="text-chart-3" size={24} />
-              </div>
-              <p className="text-muted-foreground">
-                시장 기회와 타이밍 점수를 기반으로 선정된 주목할 만한 아이디어
+      {/* Featured Idea - Minimalist approach */}
+      {todaysIdea && (
+        <section className="py-20 bg-slate-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-4xl font-semibold text-slate-900 mb-4">
+                오늘의 추천 아이디어
+              </h2>
+              <p className="text-lg text-slate-600">
+                한국 시장 적합도가 높은 검증된 비즈니스 아이디어
               </p>
             </div>
-            {todaysIdea ? (
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 rounded-3xl" />
-                <Card className="relative rounded-3xl p-8 shadow-lg border-2 border-primary/10">
-                  <IdeaCard idea={todaysIdea} />
-                </Card>
+            
+            <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-slate-200">
+              <IdeaCard idea={todaysIdea} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Market Insights - Clean feature cards */}
+      <section className="py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-semibold text-slate-900 mb-4">
+              데이터 기반 시장 분석
+            </h2>
+            <p className="text-lg text-slate-600">
+              정확한 데이터로 검증된 비즈니스 기회를 발견하세요
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-200 transition-colors">
+                <TrendingUp className="w-8 h-8 text-blue-600" />
               </div>
-            ) : (
-              <p>No featured idea available.</p>
-            )}
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">트렌드 분석</h3>
+              <p className="text-slate-600">네이버 검색 트렌드와 소셜 미디어 데이터로 시장 관심도를 실시간 측정합니다</p>
+            </div>
+            
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-200 transition-colors">
+                <Target className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">시장 적합성</h3>
+              <p className="text-slate-600">한국의 규제 환경, 소비 문화, 비즈니스 관습을 고려한 현지화 분석을 제공합니다</p>
+            </div>
+            
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 transition-colors">
+                <Zap className="w-8 h-8 text-amber-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">실행 가이드</h3>
+              <p className="text-slate-600">파트너십 전략부터 정부 지원 프로그램까지 단계별 실행 로드맵을 제시합니다</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="pb-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
-            {/* Filters - TODO: Fix component compatibility */}
-            {/* <IdeaFilters initialFilters={{ category: '', difficulty: '', access: '', source: '', sortBy: '' }} /> */}
-
-            {/* Market Insights Banner */}
-            <div className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="p-6 text-center">
-                <TrendingUp className="text-primary mx-auto mb-3" size={32} />
-                <h4 className="font-semibold mb-2">키워드 트렌드 분석</h4>
-                <p className="text-sm text-muted-foreground">실시간 검색 데이터로 시장 관심도 측정</p>
-              </Card>
-              <Card className="p-6 text-center">
-                <Target className="text-secondary mx-auto mb-3" size={32} />
-                <h4 className="font-semibold mb-2">한국 시장 특화</h4>
-                <p className="text-sm text-muted-foreground">규제환경과 문화적 맥락 고려한 현지화 분석</p>
-              </Card>
-              <Card className="p-6 text-center">
-                <Zap className="text-chart-3 mx-auto mb-3" size={32} />
-                <h4 className="font-semibold mb-2">실행 전략</h4>
-                <p className="text-sm text-muted-foreground">파트너십부터 정부지원까지 단계별 가이드</p>
-              </Card>
+      {/* Ideas Grid - Modern card layout */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-semibold text-slate-900 mb-4">
+              엄선된 비즈니스 아이디어
+            </h2>
+            <p className="text-lg text-slate-600">
+              해외에서 검증되고 한국 시장에 최적화된 아이디어 모음
+            </p>
+          </div>
+          
+          {filteredIdeas.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-3xl">🔍</span>
+              </div>
+              <h3 className="text-2xl font-semibold text-slate-900 mb-3">아이디어를 준비 중입니다</h3>
+              <p className="text-slate-600 text-lg">곧 흥미로운 비즈니스 아이디어들을 만나보실 수 있습니다</p>
             </div>
-
-            {/* Ideas Grid */}
-            <div className="space-y-8">
-              {filteredIdeas.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl">🔍</span>
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">아이디어를 찾을 수 없습니다</h3>
-                  <p className="text-muted-foreground">다른 필터를 시도해보거나 모든 필터를 초기화해보세요</p>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {filteredIdeas.slice(0, 6).map((idea) => (
+                <div key={idea.id} className="bg-white rounded-2xl p-1 shadow-sm border border-slate-200 hover:shadow-lg transition-shadow">
+                  <IdeaCard idea={idea} />
                 </div>
-              ) : (
-                <div className="grid gap-8 lg:gap-12 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredIdeas.map((idea) => (
-                    <IdeaCard key={idea.id} idea={idea} />
-                  ))}
-                </div>
-              )}
+              ))}
             </div>
-
-            {/* Premium CTA */}
-            <div className="mt-20">
-              <Card className="rounded-2xl p-8 lg:p-12 shadow-lg border-2 border-primary/10">
-                <div className="text-center max-w-3xl mx-auto">
-                  <h2 className="text-3xl font-bold text-foreground mb-4">더 깊은 인사이트가 필요하신가요?</h2>
-                  <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                    프리미엄 구독으로 독점 아이디어 분석, 검색 트렌드 데이터, 실행 체크리스트, 파트너십 전략에 액세스하세요
-                  </p>
-                  <div className="space-y-4 mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <Card className="p-4">
-                        <h4 className="font-medium mb-2">📊 데이터 분석</h4>
-                        <p className="text-muted-foreground">검색 트렌드, 시장 기회 점수</p>
-                      </Card>
-                      <Card className="p-4">
-                        <h4 className="font-medium mb-2">🚀 실행 가이드</h4>
-                        <p className="text-muted-foreground">파트너십 전략, 정부 지원 정보</p>
-                      </Card>
-                      <Card className="p-4">
-                        <h4 className="font-medium mb-2">💡 독점 콘텐츠</h4>
-                        <p className="text-muted-foreground">심층 분석, AI 인사이트</p>
-                      </Card>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <Button className="px-8 py-3 rounded-full font-medium">프리미엄 시작하기</Button>
-                    <span className="text-sm text-muted-foreground">월 $9 • 언제든 취소 가능</span>
-                  </div>
-                </div>
-              </Card>
+          )}
+          
+          {filteredIdeas.length > 6 && (
+            <div className="text-center mt-12">
+              <Button variant="outline" size="lg" className="px-8 py-3 text-slate-700 border-slate-300 hover:bg-slate-100">
+                더 많은 아이디어 보기
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
             </div>
+          )}
+        </div>
+      </section>
+
+      {/* Premium CTA - Apple-inspired clean section */}
+      <section className="py-24 bg-slate-900">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-4xl lg:text-5xl font-semibold text-white mb-6">
+            더 깊은 인사이트가<br />필요하신가요?
+          </h2>
+          <p className="text-xl text-slate-300 mb-12 leading-relaxed">
+            프리미엄으로 독점 분석, 실시간 트렌드, 실행 가이드를<br />모두 이용하세요
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <div className="text-center">
+              <div className="text-4xl mb-4">📊</div>
+              <h3 className="text-lg font-semibold text-white mb-2">심층 데이터</h3>
+              <p className="text-slate-400">네이버 트렌드, 시장 기회 점수</p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl mb-4">🚀</div>
+              <h3 className="text-lg font-semibold text-white mb-2">실행 로드맵</h3>
+              <p className="text-slate-400">파트너십, 정부 지원 가이드</p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl mb-4">💡</div>
+              <h3 className="text-lg font-semibold text-white mb-2">독점 콘텐츠</h3>
+              <p className="text-slate-400">AI 분석, 업계 인사이트</p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg font-medium rounded-full">
+              프리미엄 시작하기
+            </Button>
+            <p className="text-slate-400">월 ₩9,900 • 언제든 취소 가능</p>
           </div>
         </div>
       </section>
