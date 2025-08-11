@@ -105,3 +105,4 @@ temp/
 *.log
 *.pid
 *.pid.lock
+.env
