@@ -61,7 +61,7 @@ export class TrendAnalyzer {
     let baseVolume = Math.floor(Math.random() * 50000) + 5000;
     
     // More realistic growth rate distribution - weighted towards positive but modest growth
-    const growthWeights = [
+    const growthWeights: Array<{ range: [number, number], weight: number }> = [
       { range: [-15, -10], weight: 0.05 }, // Declining markets (5%)
       { range: [-10, -5], weight: 0.1 },   // Slow decline (10%)
       { range: [-5, 0], weight: 0.15 },    // Stagnant (15%)

@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 export default function HomePage() {
-  const [user, setUser] = useState(null);
-  const [ideas, setIdeas] = useState([]);
+  const [user, setUser] = useState<any>(null);
+  const [ideas, setIdeas] = useState<any[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
   const [ideasLoading, setIdeasLoading] = useState(true);
 

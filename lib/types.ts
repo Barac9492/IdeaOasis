@@ -26,6 +26,7 @@ export interface Idea {
     regulatoryRisk: number;
   };
   partnershipStrategy?: string[];
+  koreaFitFactors?: KoreaFitFactors;
   trendData?: {
     keyword: string;
     growth: string;

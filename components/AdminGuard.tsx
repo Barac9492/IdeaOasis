@@ -4,7 +4,7 @@ import { auth } from '@/lib/firebase';
 import { Shield, AlertCircle } from 'lucide-react';
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -14,7 +14,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
       if (user) {
         // Check if user email is in admin list
         const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
-        setIsAdmin(adminEmails.includes(user.email));
+        setIsAdmin(Boolean(user.email && adminEmails.includes(user.email)));
       } else {
         setIsAdmin(false);
       }

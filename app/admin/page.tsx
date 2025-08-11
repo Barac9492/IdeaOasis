@@ -17,10 +17,10 @@ interface Idea {
   sourceUrl: string;
   sourceName?: string;
   summary3?: string;
-  tags?: string[];
+  tags?: string[] | string;
   koreaFit?: number;
   whyNow?: string;
-  risks?: string[];
+  risks?: string[] | string;
 }
 
 export default function AdminPage() {
@@ -559,7 +559,7 @@ export default function AdminPage() {
                       <p className="text-slate-700 text-sm">{idea.summary3}</p>
                     )}
 
-                    {idea.tags && idea.tags.length > 0 && (
+                    {idea.tags && Array.isArray(idea.tags) && idea.tags.length > 0 && (
                       <div className="flex gap-2 flex-wrap">
                         {idea.tags.map((tag, index) => (
                           <span key={index} className="px-2 py-1 bg-slate-100 text-slate-700 rounded-md text-xs">

@@ -53,8 +53,6 @@ export default async function IdeaDetail({ params }: { params: { id: string } })
           growth: `${trendAnalysis.growthRate > 0 ? '+' : ''}${trendAnalysis.growthRate}%`,
           monthlySearches: trendAnalysis.searchVolume.toLocaleString(),
           trendScore,
-          seasonality: trendAnalysis.seasonality,
-          competitorCount: trendAnalysis.competitorCount,
           lastUpdated: trendAnalysis.lastAnalyzed
         },
         metrics: {
@@ -64,7 +62,7 @@ export default async function IdeaDetail({ params }: { params: { id: string } })
           timingScore: koreaFitResult.factors.marketReadiness,
           regulatoryRisk: 10 - koreaFitResult.factors.regulatoryFriendliness
         },
-        executionRoadmap: roadmap.phases,
+        executionRoadmap: roadmap,
         updatedAt: new Date().toISOString()
       };
       

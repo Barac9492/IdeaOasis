@@ -112,7 +112,7 @@ export default async function IdeasPage({
   }
 
   // Get unique categories for filter
-  const categories = [...new Set(enhancedIdeas.map(idea => idea.sector).filter(Boolean))];
+  const categories = [...new Set(enhancedIdeas.map(idea => idea.sector).filter((sector): sector is string => Boolean(sector)))];
   
   return (
     <main className="mx-auto max-w-7xl p-6">

@@ -8,7 +8,7 @@ import Nav from '@/components/Nav';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   // Routes that don't require authentication

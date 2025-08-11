@@ -125,13 +125,13 @@ export async function POST(req: NextRequest) {
     // Execution Roadmap
     if (requestedFeatures.includes('roadmap')) {
       const roadmap = await RoadmapGenerator.generateRoadmap(idea);
-      enhancedIdea.roadmap = roadmap;
+      enhancedIdea.executionRoadmap = roadmap;
       
       enhancements.roadmap = {
-        phases: roadmap.phases,
-        totalPhases: roadmap.phases?.length || 0,
-        estimatedTimeframe: roadmap.totalTimeframe,
-        totalBudget: roadmap.totalBudget
+        steps: roadmap,
+        totalSteps: roadmap.length || 0,
+        estimatedTimeframe: 'TBD',
+        totalBudget: 'TBD'
       };
     }
     
