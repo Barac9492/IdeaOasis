@@ -158,7 +158,7 @@ export default function AdminPanel({ onNavigate }: AdminPanelProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="source">출처</Label>
-                  <Select value={newIdea.source} onValueChange={(value) => handleInputChange('source', value)}>
+                  <Select value={newIdea.source} onValueChange={(value: string) => handleInputChange('source', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="출처 선택" />
                     </SelectTrigger>
@@ -174,7 +174,7 @@ export default function AdminPanel({ onNavigate }: AdminPanelProps) {
 
                 <div>
                   <Label htmlFor="difficulty">난이도</Label>
-                  <Select value={newIdea.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
+                  <Select value={newIdea.difficulty} onValueChange={(value: string) => handleInputChange('difficulty', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="난이도 선택" />
                     </SelectTrigger>
@@ -192,7 +192,7 @@ export default function AdminPanel({ onNavigate }: AdminPanelProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="category">카테고리</Label>
-                  <Select value={newIdea.category} onValueChange={(value) => handleInputChange('category', value)}>
+                  <Select value={newIdea.category} onValueChange={(value: string) => handleInputChange('category', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="카테고리 선택" />
                     </SelectTrigger>
@@ -208,7 +208,7 @@ export default function AdminPanel({ onNavigate }: AdminPanelProps) {
 
                 <div>
                   <Label htmlFor="access">접근 권한</Label>
-                  <Select value={newIdea.access} onValueChange={(value) => handleInputChange('access', value)}>
+                  <Select value={newIdea.access} onValueChange={(value: string) => handleInputChange('access', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="접근 권한 선택" />
                     </SelectTrigger>
