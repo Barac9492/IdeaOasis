@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { ArrowRight, Lightbulb, TrendingUp, Globe, Users, Star, ChevronRight } from 'lucide-react';
 
 export default function HomePage() {
   const [currentIdea, setCurrentIdea] = useState(0);
@@ -43,7 +42,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                <Lightbulb className="w-4 h-4" />
+                💡
                 글로벌 아이디어를 한국 시장에 맞게
               </div>
               
@@ -63,14 +62,14 @@ export default function HomePage() {
                   className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-200"
                 >
                   아이디어 둘러보기
-                  <ArrowRight className="w-5 h-5" />
+                  →
                 </Link>
                 <Link 
                   href="/top" 
                   className="inline-flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
                 >
                   인기 아이디어
-                  <TrendingUp className="w-5 h-5" />
+                  📈
                 </Link>
               </div>
             </div>
@@ -81,7 +80,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">오늘의 추천 아이디어</h3>
                   <div className="flex items-center gap-1 text-sm text-orange-600 font-medium">
-                    <Star className="w-4 h-4 fill-current" />
+                    ⭐
                     Korea Fit {featuredIdeas[currentIdea].koreaFit}/10
                   </div>
                 </div>
@@ -116,7 +115,7 @@ export default function HomePage() {
                   </div>
                   <Link href="/ideas" className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
                     자세히 보기
-                    <ChevronRight className="w-4 h-4" />
+                    →
                   </Link>
                 </div>
               </div>
@@ -165,7 +164,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                <Globe className="w-6 h-6 text-blue-600" />
+                <span className="text-2xl">🌍</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">글로벌 검증</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -176,7 +175,7 @@ export default function HomePage() {
             
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
+                <span className="text-2xl">📊</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Korea Fit 점수</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -187,7 +186,7 @@ export default function HomePage() {
             
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-                <Users className="w-6 h-6 text-green-600" />
+                <span className="text-2xl">👥</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">커뮤니티 인사이트</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -214,7 +213,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transition-all duration-200 shadow-lg"
           >
             지금 시작하기
-            <ArrowRight className="w-5 h-5" />
+            →
           </Link>
         </div>
       </section>
