@@ -20,8 +20,16 @@ export async function upsertIdeas(bulk: Idea[]): Promise<number> {
   let count = 0;
   for (const it of bulk) {
     const idx = inMemory.findIndex(x => x.id === it.id);
-    if (idx >= 0) inMemory[idx] = { ...inMemory[idx], ...it };
-    else inMemory.push({ ...it, visible: true });
+    if (idx >= 0) {
+      inMemory[idx] = { ...inMemory[idx], ...it, updatedAt: new Date().toISOString() };
+    } else {
+      inMemory.push({ 
+        ...it, 
+        visible: it.visible !== undefined ? it.visible : true,
+        createdAt: it.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
     count++;
   }
   return count;
