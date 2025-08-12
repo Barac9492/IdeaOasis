@@ -18,6 +18,7 @@ export interface Idea {
   visible?: boolean;
   votesUp?: number;
   votesDown?: number;
+  // Legacy fields for backward compatibility
   metrics?: {
     marketOpportunity: number;
     executionDifficulty: number;
@@ -39,6 +40,48 @@ export interface Idea {
   targetUser?: string;
 }
 
+// ===== REGULATORY COMPLIANCE TYPES =====
+
+export interface RegulatoryAnalysis {
+  id: string;
+  businessIdea: string;
+  category: BusinessCategory;
+  riskScore: number; // 0-100
+  regulations: string[];
+  costs: ComplianceCosts;
+  competitors: string[];
+  timeline: string;
+  verdict: ComplianceVerdict;
+  failureExamples?: string[];
+  keyInsights: string[];
+  recommendations: string[];
+  analyzedAt: string;
+  analysisVersion: string;
+}
+
+export type BusinessCategory = 
+  | 'fintech'
+  | 'ecommerce'
+  | 'healthcare'
+  | 'food'
+  | 'transportation'
+  | 'accommodation'
+  | 'general';
+
+export interface ComplianceCosts {
+  licenses: string; // ₩X,XXX,XXX - ₩X,XXX,XXX
+  legal: string;    // ₩X,XXX,XXX - ₩X,XXX,XXX
+  compliance: string; // ₩X,XXX,XXX/월
+}
+
+export type ComplianceVerdict = 
+  | 'LOW RISK - GOOD TO PROCEED'
+  | 'PROCEED WITH CAUTION'
+  | 'MODERATE RISK - SIGNIFICANT PREPARATION NEEDED'
+  | 'HIGH RISK - CONSIDER MAJOR PIVOT';
+
+// ===== BASIC LEGACY TYPES =====
+
 export interface ExecutionStep {
   id: string;
   title: string;
@@ -48,16 +91,6 @@ export interface ExecutionStep {
   priority: 'high' | 'medium' | 'low';
   resources?: string[];
   estimatedCost?: string;
-}
-
-export interface TrendAnalysis {
-  keyword: string;
-  searchVolume: number;
-  growthRate: number; // percentage
-  seasonality?: string;
-  competitionLevel: 'low' | 'medium' | 'high';
-  relatedKeywords: string[];
-  lastAnalyzed: string;
 }
 
 export interface Vote {

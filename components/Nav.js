@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { Home, Search, TrendingUp, Settings, User, BarChart3, CreditCard, Sparkles, Shield, FileText, Users, Brain, Rocket } from "lucide-react";
+import { User } from "lucide-react";
 
 export default function Nav() {
   const [user, setUser] = useState(null);
@@ -22,90 +22,33 @@ export default function Nav() {
           </Link>
           
           {/* Main Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-8">
             <Link 
               href="/" 
-              className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+              className="text-slate-700 hover:text-slate-900 transition-colors font-medium"
             >
-              <Home className="w-4 h-4" />
-              <span>홈</span>
+              Home
             </Link>
             <Link 
-              href="/ideas/enhanced" 
-              className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+              href="/submit" 
+              className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors font-medium"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>아이디어 탐색</span>
-            </Link>
-            <Link 
-              href="/top" 
-              className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-            >
-              <TrendingUp className="w-4 h-4" />
-              <span>인기 아이디어</span>
+              Check Your Idea
             </Link>
             {user && (
-              <>
-                <Link 
-                  href="/dashboard/chief" 
-                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  <Brain className="w-4 h-4" />
-                  <span>Chief of Staff</span>
-                </Link>
-                <Link 
-                  href="/dashboard" 
-                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  <BarChart3 className="w-4 h-4" />
-                  <span>대시보드</span>
-                </Link>
-                <Link 
-                  href="/dashboard/regulatory" 
-                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  <Shield className="w-4 h-4" />
-                  <span>규제 모니터링</span>
-                </Link>
-                <Link 
-                  href="/dashboard/content" 
-                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>콘텐츠 에이전트</span>
-                </Link>
-                <Link 
-                  href="/dashboard/business" 
-                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  <Users className="w-4 h-4" />
-                  <span>영업 에이전트</span>
-                </Link>
-                <Link 
-                  href="/dashboard/platform" 
-                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  <Rocket className="w-4 h-4" />
-                  <span>플랫폼 개발</span>
-                </Link>
-              </>
-            )}
-            <Link 
-              href="/pricing" 
-              className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
-            >
-              <CreditCard className="w-4 h-4" />
-              <span>요금제</span>
-            </Link>
-            {user && user.email === 'ethancho12@gmail.com' && (
               <Link 
-                href="/admin" 
-                className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                href="/dashboard" 
+                className="text-slate-700 hover:text-slate-900 transition-colors font-medium"
               >
-                <Settings className="w-4 h-4" />
-                <span>관리자</span>
+                Dashboard
               </Link>
             )}
+            <Link 
+              href="/regulatory" 
+              className="text-slate-700 hover:text-slate-900 transition-colors font-medium"
+            >
+              Regulations
+            </Link>
           </div>
 
           {/* User Authentication */}
@@ -136,32 +79,22 @@ export default function Nav() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden border-t border-slate-200 px-6 py-3">
-        <div className="flex items-center justify-around">
-          <Link href="/" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-            <Home className="w-4 h-4" />
-            <span>홈</span>
+      <div className="md:hidden border-t border-slate-200">
+        <div className="flex items-center justify-around py-3">
+          <Link href="/" className="text-xs text-slate-600 hover:text-slate-900">
+            Home
           </Link>
-          <Link href="/ideas/enhanced" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-            <Sparkles className="w-4 h-4" />
-            <span>탐색</span>
+          <Link href="/submit" className="text-xs bg-slate-900 text-white px-3 py-2 rounded">
+            Check Idea
           </Link>
           {user && (
-            <Link href="/dashboard" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-              <BarChart3 className="w-4 h-4" />
-              <span>대시보드</span>
+            <Link href="/dashboard" className="text-xs text-slate-600 hover:text-slate-900">
+              Dashboard
             </Link>
           )}
-          <Link href="/pricing" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-            <CreditCard className="w-4 h-4" />
-            <span>요금제</span>
+          <Link href="/regulatory" className="text-xs text-slate-600 hover:text-slate-900">
+            Regulations
           </Link>
-          {user && user.email === 'ethancho12@gmail.com' && (
-            <Link href="/admin" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-              <Settings className="w-4 h-4" />
-              <span>관리</span>
-            </Link>
-          )}
         </div>
       </div>
     </nav>

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { auth, googleProvider } from '@/lib/firebase';
+import { auth, provider as googleProvider } from '@/shared/lib/firebase';
 import { signInWithPopup } from 'firebase/auth';
 import { User, Lock } from 'lucide-react';
 
@@ -11,8 +11,17 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // Routes that don't require authentication
-  const publicRoutes = ['/'];
-  const isPublicRoute = publicRoutes.includes(pathname);
+  const publicRoutes = [
+    '/',
+    '/ai-agents',
+    '/ideas',
+    '/ideas/enhanced',
+    '/top',
+    '/newsletter',
+    '/pricing',
+    '/demo'
+  ];
+  const isPublicRoute = publicRoutes.includes(pathname) || pathname.startsWith('/api/');
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {

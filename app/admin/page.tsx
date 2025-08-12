@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Sparkles, Upload, BarChart3, RefreshCw, CheckCircle, AlertCircle, Plus, Edit3, Save, X } from 'lucide-react';
-import AdminGuard from '@/components/AdminGuard';
+import AuthGuard from '@/components/AuthGuard';
 
 interface AdminStats {
   totalIdeas: number;
@@ -184,7 +184,7 @@ export default function AdminPage() {
   }
 
   return (
-    <AdminGuard>
+    <AuthGuard>
       <main className="mx-auto max-w-6xl p-6 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -610,6 +610,6 @@ export default function AdminPage() {
         </div>
       </section>
     </main>
-    </AdminGuard>
+    </AuthGuard>
   );
 }

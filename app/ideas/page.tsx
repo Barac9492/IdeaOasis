@@ -6,7 +6,7 @@ import { seedDatabase } from '@/lib/seedData';
 import { KoreaFitAnalyzer } from '@/lib/services/koreaFitAnalyzer';
 import { TrendAnalyzer } from '@/lib/services/trendAnalyzer';
 import { upsertIdeas } from '@/lib/db';
-import { TrendingUp, Target, Search } from 'lucide-react';
+import { TrendingUp, Target, Search, Star } from 'lucide-react';
 
 export default async function IdeasPage({
   searchParams
@@ -143,6 +143,35 @@ export default async function IdeasPage({
         <IdeasFilters categories={categories} />
       </div>
 
+      {/* Premium Insights Banner */}
+      {filteredIdeas.filter(idea => idea.koreaFit && idea.koreaFit >= 8.5).length > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 mb-6 border border-amber-200">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-amber-100 rounded-lg">
+              <Star className="w-6 h-6 text-amber-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">프리미엄 인사이트</h2>
+              <p className="text-sm text-slate-600">8.5점 이상 고품질 아이디어를 우선 표시</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-slate-700">{filteredIdeas.filter(idea => idea.koreaFit && idea.koreaFit >= 9.0).length}개 최고 등급</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+              <span className="text-slate-700">{filteredIdeas.filter(idea => idea.koreaFit && idea.koreaFit >= 8.5 && idea.koreaFit < 9.0).length}개 프리미엄</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <span className="text-slate-700">{filteredIdeas.filter(idea => idea.trendData?.trendScore && idea.trendData.trendScore >= 8.0).length}개 트렌딩</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Results */}
       {filteredIdeas.length === 0 ? (
         <div className="text-center py-20">
@@ -153,13 +182,36 @@ export default async function IdeasPage({
           <p className="text-slate-600">다른 키워드나 필터를 시도해보세요</p>
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
-          {filteredIdeas.map((idea) => (
-            <div key={idea.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-shadow h-full">
-              <IdeaCard idea={idea} />
+        <>
+          {/* Premium Ideas First */}
+          {filteredIdeas.filter(idea => idea.koreaFit && idea.koreaFit >= 8.5).length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <Star className="w-5 h-5 text-amber-500" />
+                프리미엄 아이디어
+              </h3>
+              <div className="grid gap-6 lg:grid-cols-2">
+                {filteredIdeas.filter(idea => idea.koreaFit && idea.koreaFit >= 8.5).slice(0, 4).map((idea) => (
+                  <div key={idea.id} className="bg-white rounded-2xl shadow-sm border-2 border-amber-200 hover:shadow-lg transition-shadow h-full relative">
+                    <IdeaCard idea={idea} />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+          
+          {/* All Ideas */}
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">모든 아이디어</h3>
+            <div className="grid gap-6 lg:grid-cols-2">
+              {filteredIdeas.map((idea) => (
+                <div key={idea.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-shadow h-full">
+                  <IdeaCard idea={idea} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </main>
   );
