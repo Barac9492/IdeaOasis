@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { Home, Search, TrendingUp, Settings, User } from "lucide-react";
+import { Home, Search, TrendingUp, Settings, User, BarChart3, CreditCard, Sparkles, Shield, FileText, Users, Brain, Rocket } from "lucide-react";
 
 export default function Nav() {
   const [user, setUser] = useState(null);
@@ -22,7 +22,7 @@ export default function Nav() {
           </Link>
           
           {/* Main Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             <Link 
               href="/" 
               className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
@@ -31,10 +31,10 @@ export default function Nav() {
               <span>홈</span>
             </Link>
             <Link 
-              href="/ideas" 
+              href="/ideas/enhanced" 
               className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
             >
-              <Search className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" />
               <span>아이디어 탐색</span>
             </Link>
             <Link 
@@ -44,13 +44,68 @@ export default function Nav() {
               <TrendingUp className="w-4 h-4" />
               <span>인기 아이디어</span>
             </Link>
+            {user && (
+              <>
+                <Link 
+                  href="/dashboard/chief" 
+                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  <Brain className="w-4 h-4" />
+                  <span>Chief of Staff</span>
+                </Link>
+                <Link 
+                  href="/dashboard" 
+                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  <span>대시보드</span>
+                </Link>
+                <Link 
+                  href="/dashboard/regulatory" 
+                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>규제 모니터링</span>
+                </Link>
+                <Link 
+                  href="/dashboard/content" 
+                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>콘텐츠 에이전트</span>
+                </Link>
+                <Link 
+                  href="/dashboard/business" 
+                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>영업 에이전트</span>
+                </Link>
+                <Link 
+                  href="/dashboard/platform" 
+                  className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  <Rocket className="w-4 h-4" />
+                  <span>플랫폼 개발</span>
+                </Link>
+              </>
+            )}
             <Link 
-              href="/admin" 
+              href="/pricing" 
               className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
             >
-              <Settings className="w-4 h-4" />
-              <span>관리자</span>
+              <CreditCard className="w-4 h-4" />
+              <span>요금제</span>
             </Link>
+            {user && user.email === 'ethancho12@gmail.com' && (
+              <Link 
+                href="/admin" 
+                className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors font-medium"
+              >
+                <Settings className="w-4 h-4" />
+                <span>관리자</span>
+              </Link>
+            )}
           </div>
 
           {/* User Authentication */}
@@ -87,18 +142,26 @@ export default function Nav() {
             <Home className="w-4 h-4" />
             <span>홈</span>
           </Link>
-          <Link href="/ideas" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-            <Search className="w-4 h-4" />
+          <Link href="/ideas/enhanced" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
+            <Sparkles className="w-4 h-4" />
             <span>탐색</span>
           </Link>
-          <Link href="/top" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-            <TrendingUp className="w-4 h-4" />
-            <span>인기</span>
+          {user && (
+            <Link href="/dashboard" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
+              <BarChart3 className="w-4 h-4" />
+              <span>대시보드</span>
+            </Link>
+          )}
+          <Link href="/pricing" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
+            <CreditCard className="w-4 h-4" />
+            <span>요금제</span>
           </Link>
-          <Link href="/admin" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
-            <Settings className="w-4 h-4" />
-            <span>관리</span>
-          </Link>
+          {user && user.email === 'ethancho12@gmail.com' && (
+            <Link href="/admin" className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-blue-600">
+              <Settings className="w-4 h-4" />
+              <span>관리</span>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

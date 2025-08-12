@@ -12,6 +12,7 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body className="bg-white min-h-screen">
         <AuthGuard>
+          <Nav />
           {children}
         </AuthGuard>
       </body>

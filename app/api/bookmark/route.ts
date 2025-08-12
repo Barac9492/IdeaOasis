@@ -1,10 +1,8 @@
 // app/api/bookmark/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getIdea } from '@/lib/db';
+import { BookmarkService } from '@/lib/services/bookmarkService';
 import type { Bookmark } from '@/lib/types';
-
-// Simple in-memory storage for bookmarks (replace with database in production)
-const bookmarks: Bookmark[] = [];
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,32 +18,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Idea not found' }, { status: 404 });
     }
     
-    // Check if bookmark already exists
-    const existingBookmarkIndex = bookmarks.findIndex(b => b.ideaId === ideaId && b.userUid === userUid);
+    // Toggle bookmark using service
+    const isBookmarked = await BookmarkService.toggleBookmark(userUid, ideaId);
+    const bookmarkCount = await BookmarkService.getBookmarkCount(ideaId);
     
-    if (existingBookmarkIndex >= 0) {
-      // Remove bookmark (toggle off)
-      bookmarks.splice(existingBookmarkIndex, 1);
-      return NextResponse.json({
-        success: true,
-        bookmarked: false,
-        message: 'Bookmark removed'
-      });
-    } else {
-      // Add bookmark
-      const newBookmark: Bookmark = {
-        ideaId,
-        userUid,
-        createdAt: new Date().toISOString()
-      };
-      bookmarks.push(newBookmark);
-      
-      return NextResponse.json({
-        success: true,
-        bookmarked: true,
-        message: 'Bookmark added'
-      });
-    }
+    return NextResponse.json({
+      success: true,
+      bookmarked: isBookmarked,
+      bookmarkCount,
+      message: isBookmarked ? 'Bookmark added' : 'Bookmark removed'
+    });
     
   } catch (error) {
     console.error('Bookmark error:', error);
@@ -64,14 +46,16 @@ export async function GET(req: NextRequest) {
   
   if (ideaId) {
     // Check if specific idea is bookmarked by user
-    const isBookmarked = bookmarks.some(b => b.ideaId === ideaId && b.userUid === userUid);
-    return NextResponse.json({ bookmarked: isBookmarked });
+    const isBookmarked = await BookmarkService.isBookmarked(userUid, ideaId);
+    const bookmarkCount = await BookmarkService.getBookmarkCount(ideaId);
+    return NextResponse.json({ bookmarked: isBookmarked, bookmarkCount });
   } else {
     // Return all bookmarks for user
-    const userBookmarks = bookmarks
-      .filter(b => b.userUid === userUid)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const userBookmarks = await BookmarkService.getUserBookmarksWithDetails(userUid);
     
-    return NextResponse.json({ bookmarks: userBookmarks });
+    return NextResponse.json({ 
+      bookmarks: userBookmarks,
+      count: userBookmarks.length 
+    });
   }
 }

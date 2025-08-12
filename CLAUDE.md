@@ -2,19 +2,36 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🌟 **STRATEGIC NORTH STAR**
+
+**📋 All development decisions should align with our strategic roadmap: [`STRATEGIC_ROADMAP.md`](./STRATEGIC_ROADMAP.md)**
+
+This roadmap outlines our transformation from a generic idea platform into **Korea's first regulatory intelligence & expert network platform**. Before implementing any features, review the roadmap to ensure alignment with our 90-day strategic goals.
+
+---
+
 ## Project Overview
 
-IdeaOasis is a Korean business idea platform MVP built with Next.js 14, Firebase, and Tailwind CSS. The platform curates and adapts U.S. startup ideas for the Korean market, providing data-driven insights, evaluation metrics, and execution roadmaps tailored to Korean business culture and regulatory environment.
+IdeaOasis is evolving from a Korean business idea platform into **Korea's essential business intelligence platform** - the definitive resource for entrepreneurs to navigate Korean regulatory landscape and access expert insights.
 
-### Vision & Strategy
+### **Strategic Evolution: Generic Ideas → Korean Business Intelligence**
 
-**Core Mission**: Become the go-to discovery platform for Korean entrepreneurs seeking validated, data-driven business ideas that are culturally adapted rather than simply translated.
+| Phase | Focus | Timeline |
+|-------|-------|----------|
+| **MVP** (Current) | Basic idea curation with Korea Fit scoring | Completed |
+| **Phase 1** (Days 1-30) | Expert network building + regulatory intelligence | In Progress |
+| **Phase 2** (Days 31-60) | Content authority + community building | Planned |
+| **Phase 3** (Days 61-90) | Monetization + expert marketplace | Planned |
 
-**Key Differentiators**:
-- **Local Adaptation Over Translation**: Ideas are re-imagined for Korean context, accounting for regulatory constraints, consumer expectations, and Confucian cultural norms
-- **Data-Driven Curation**: Every idea backed by objective data from Naver Search Trends, government policy updates, and Korean community signals
-- **Transparent Evaluation**: Multi-dimensional scoring (opportunity size, feasibility, timing, revenue potential, etc.) to help risk-averse Korean founders make informed decisions
-- **Mobile-First Korean UX**: Fast, responsive interface optimized for Korea's heavy mobile usage patterns
+### **New Core Mission** 
+Transform from "Korean business idea discovery" to **"Preventing business failures in Korea through regulatory intelligence and expert validation"**
+
+### **Strategic Differentiators**:
+- **Regulatory Intelligence First**: Real-time Korean government policy monitoring with automated alerts
+- **50+ Korean Expert Network**: Direct access to validated business expertise (vs. AI-generated content)
+- **Regulatory Risk Scoring**: Proprietary 0-100 system preventing compliance failures
+- **Expert-Validated Insights**: Every idea validated by Korean business experts through video analysis
+- **Community-Driven Intelligence**: Peer-to-peer regulatory knowledge sharing platform
 
 ## Development Commands
 

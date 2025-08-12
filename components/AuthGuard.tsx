@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { auth, googleProvider } from '@/lib/firebase';
 import { signInWithPopup } from 'firebase/auth';
 import { User, Lock } from 'lucide-react';
-import Nav from '@/components/Nav';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -103,7 +102,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Nav />
       {children}
     </>
   );

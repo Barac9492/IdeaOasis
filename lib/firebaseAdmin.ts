@@ -1,8 +1,10 @@
 // lib/firebaseAdmin.ts
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 
 let _db: FirebaseFirestore.Firestore | null = null;
+let _auth: any = null;
 
 export function getAdminDb() {
   if (_db) return _db;
@@ -43,9 +45,42 @@ export function getAdminDb() {
     }
     
     _db = getFirestore();
+    _auth = getAuth();
     return _db;
   } catch (error: any) {
     console.error('Firebase Admin SDK initialization error:', error.message);
     throw new Error(`Firebase Admin SDK failed: ${error.message}`);
   }
 }
+
+export function getAdminAuth() {
+  if (_auth) return _auth;
+  
+  // Initialize if not already done
+  getAdminDb();
+  return _auth;
+}
+
+// Lazy export that initializes on first use
+export const auth = {
+  verifyIdToken: async (token: string) => {
+    const authInstance = getAdminAuth();
+    return authInstance.verifyIdToken(token);
+  }
+};
+
+// Export db for convenience (lazy initialization)
+export const db = {
+  collection: (name: string) => {
+    const dbInstance = getAdminDb();
+    return dbInstance.collection(name);
+  },
+  doc: (path: string) => {
+    const dbInstance = getAdminDb();
+    return dbInstance.doc(path);
+  },
+  batch: () => {
+    const dbInstance = getAdminDb();
+    return dbInstance.batch();
+  }
+};
