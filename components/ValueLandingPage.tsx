@@ -1,8 +1,17 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 
 export default function ValueLandingPage() {
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(setUser);
+    return unsubscribe;
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero - The Problem */}
@@ -97,22 +106,57 @@ export default function ValueLandingPage() {
 
         {/* Enhanced CTA Section */}
         <div className="text-center">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <button 
-              onClick={() => signInWithPopup(auth, googleProvider)}
-              className="group bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl min-h-[60px] relative overflow-hidden"
-            >
-              <span className="relative z-10">🚀 무료 규제 분석 시작하기</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
-            </button>
-            <a
-              href="/trends"
-              className="group border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-medium text-lg hover:border-slate-400 hover:bg-slate-50 text-center min-h-[60px] flex items-center justify-center transition-all duration-200"
-            >
-              <span className="mr-2">🔥</span>
-              <span>뜨는 해외 모델 둘러보기</span>
-            </a>
-          </div>
+          {user ? (
+            /* Authenticated User CTAs */
+            <div className="mb-8">
+              <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6 max-w-md mx-auto">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="font-semibold text-green-800">로그인 완료!</span>
+                </div>
+                <p className="text-sm text-green-700">이제 규제 분석과 트렌드 모델을 자유롭게 이용하실 수 있습니다.</p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => router.push('/submit')}
+                  className="group bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl min-h-[60px] relative overflow-hidden"
+                >
+                  <span className="relative z-10">🚀 규제 분석 시작하기</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+                </button>
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="group border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-medium text-lg hover:border-slate-400 hover:bg-slate-50 text-center min-h-[60px] flex items-center justify-center transition-all duration-200"
+                >
+                  <span className="mr-2">📊</span>
+                  <span>내 대시보드 보기</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Unauthenticated User CTAs */
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <button 
+                onClick={() => signInWithPopup(auth, googleProvider)}
+                className="group bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl min-h-[60px] relative overflow-hidden"
+              >
+                <span className="relative z-10">🚀 무료 규제 분석 시작하기</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+              </button>
+              <a
+                href="/about"
+                className="group border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-medium text-lg hover:border-slate-400 hover:bg-slate-50 text-center min-h-[60px] flex items-center justify-center transition-all duration-200"
+              >
+                <span className="mr-2">📖</span>
+                <span>자세히 알아보기</span>
+              </a>
+            </div>
+          )}
           
           {/* Social Proof */}
           <div className="flex items-center justify-center gap-6 text-sm text-slate-600">

@@ -20,10 +20,7 @@ export default function HomePage() {
       setUser(user);
       setAuthLoading(false);
       clearTimeout(timeout);
-      if (user) {
-        // Redirect authenticated users to dashboard instead of showing content on landing page
-        window.location.href = '/dashboard';
-      }
+      // Keep users on landing page after login - no automatic redirect
     });
 
     return () => {
