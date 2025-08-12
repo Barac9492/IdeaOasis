@@ -35,6 +35,12 @@ export default function Nav() {
             >
               아이디어 검증
             </Link>
+            <Link 
+              href="/trends" 
+              className="text-slate-700 hover:text-slate-900 transition-colors font-medium"
+            >
+              트렌드 모델
+            </Link>
             {user && (
               <Link 
                 href="/dashboard" 
@@ -86,6 +92,9 @@ export default function Nav() {
           </Link>
           <Link href="/submit" className="text-xs bg-slate-900 text-white px-3 py-2 rounded">
             아이디어 검증
+          </Link>
+          <Link href="/trends" className="text-xs text-slate-600 hover:text-slate-900">
+            트렌드
           </Link>
           {user && (
             <Link href="/dashboard" className="text-xs text-slate-600 hover:text-slate-900">

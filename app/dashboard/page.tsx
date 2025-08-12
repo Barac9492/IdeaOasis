@@ -15,6 +15,8 @@ function DashboardContent() {
   const [user, setUser] = useState<any>(null);
   const [recentAnalyses, setRecentAnalyses] = useState<RegulatoryAnalysis[]>([]);
   const [complianceAlerts, setComplianceAlerts] = useState<any[]>([]);
+  const [watchlistItems, setWatchlistItems] = useState<any[]>([]);
+  const [trendingModels, setTrendingModels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -52,6 +54,45 @@ function DashboardContent() {
           recommendations: ['Engage Korean legal counsel early', 'Set aside ₩10-20M for compliance'],
           analyzedAt: new Date().toISOString(),
           analysisVersion: '1.0'
+        }
+      ]);
+
+      // Load watchlist from localStorage
+      try {
+        const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
+        setWatchlistItems(watchlist);
+      } catch (error) {
+        console.error('Failed to load watchlist:', error);
+      }
+
+      // Mock trending foreign models
+      setTrendingModels([
+        {
+          id: '1',
+          name: 'Stripe Atlas',
+          description: '원클릭 미국 법인 설립 서비스',
+          category: 'fintech',
+          trend: 'rising',
+          riskScore: 65,
+          reason: '한국 법인 설립 규제로 직접 진출 어려움'
+        },
+        {
+          id: '2', 
+          name: 'Discord Nitro',
+          description: '게이머 커뮤니티 구독 서비스',
+          category: 'social',
+          trend: 'hot',
+          riskScore: 35,
+          reason: '국내 게임사들이 주목하는 모델'
+        },
+        {
+          id: '3',
+          name: 'Substack',
+          description: '뉴스레터 구독 플랫폼',
+          category: 'media',
+          trend: 'rising',
+          riskScore: 45,
+          reason: '개인정보보호법 준수 필요'
         }
       ]);
 
@@ -133,100 +174,141 @@ function DashboardContent() {
           </div>
 
           {/* Main Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             
-            {/* Overall Risk Score */}
+            {/* Watchlist Count */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-slate-900">전체 리스크 점수</h3>
-                <Shield className={`h-6 w-6 ${
-                  overallRiskScore >= 80 ? 'text-red-500' :
-                  overallRiskScore >= 60 ? 'text-orange-500' :
-                  overallRiskScore >= 40 ? 'text-yellow-500' : 'text-green-500'
-                }`} />
+                <h3 className="font-semibold text-slate-900">관심목록</h3>
+                <TrendingUp className="h-6 w-6 text-blue-500" />
               </div>
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-3xl font-bold text-slate-900">{overallRiskScore}</span>
-                <span className="text-slate-600">/100</span>
+                <span className="text-3xl font-bold text-slate-900">{watchlistItems.length}</span>
+                <span className="text-slate-600">개</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
-                <div
-                  className={`h-2 rounded-full ${
-                    overallRiskScore >= 80 ? 'bg-red-500' :
-                    overallRiskScore >= 60 ? 'bg-orange-500' :
-                    overallRiskScore >= 40 ? 'bg-yellow-500' : 'bg-green-500'
-                  }`}
-                  style={{ width: `${overallRiskScore}%` }}
-                ></div>
+              <div className="text-sm text-slate-600">
+                추적 중인 모델
               </div>
-              <span className={`text-sm font-medium ${
-                overallRiskScore >= 80 ? 'text-red-700' :
-                overallRiskScore >= 60 ? 'text-orange-700' :
-                overallRiskScore >= 40 ? 'text-yellow-700' : 'text-green-700'
-              }`}>
-                {overallRiskScore >= 80 ? '높은 리스크' :
-                 overallRiskScore >= 60 ? '중간 리스크' :
-                 overallRiskScore >= 40 ? '낮은 리스크' : '매우 낮은 리스크'}
-              </span>
+            </div>
+
+            {/* New Trends This Week */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-slate-900">신규 트렌드</h3>
+                <span className="text-orange-500">🔥</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-3xl font-bold text-slate-900">6</span>
+                <span className="text-slate-600">개</span>
+              </div>
+              <div className="text-sm text-slate-600">
+                이번 주 새로 발견됨
+              </div>
             </div>
 
             {/* Active Alerts */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-slate-900">규제 알림</h3>
-                <Bell className="h-6 w-6 text-blue-500" />
+                <Bell className="h-6 w-6 text-red-500" />
               </div>
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-3xl font-bold text-slate-900">{complianceAlerts.length}</span>
                 <span className="text-slate-600">건</span>
               </div>
               <div className="text-sm text-slate-600">
-                활성 규제 변경사항
+                신규 규제 변경사항
               </div>
-              {complianceAlerts.length > 0 && (
-                <div className="mt-3">
-                  <div className={`px-2 py-1 rounded text-xs ${
-                    complianceAlerts[0].severity === 'high' ? 'bg-red-100 text-red-700' :
-                    complianceAlerts[0].severity === 'medium' ? 'bg-orange-100 text-orange-700' :
-                    'bg-blue-100 text-blue-700'
-                  }`}>
-                    최신: {complianceAlerts[0].title.substring(0, 30)}...
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Next Deadline */}
+            {/* Opportunity Score */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-slate-900">다음 마감일</h3>
-                <Calendar className="h-6 w-6 text-purple-500" />
+                <h3 className="font-semibold text-slate-900">기회 점수</h3>
+                <CheckCircle className="h-6 w-6 text-green-500" />
               </div>
-              {upcomingDeadlines.length > 0 ? (
-                <>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-3xl font-bold text-slate-900">
-                      {Math.ceil((new Date(upcomingDeadlines[0].deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))}
-                    </span>
-                    <span className="text-slate-600">일</span>
-                  </div>
-                  <div className="text-sm text-slate-600 mb-3">
-                    {upcomingDeadlines[0].title.substring(0, 20)}...
-                  </div>
-                  <div className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                    {upcomingDeadlines[0].severity === 'high' ? '긴급 대응 필요' : '대응 필요'}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-3xl font-bold text-slate-900">-</span>
-                  </div>
-                  <div className="text-sm text-slate-600">예정된 마감일 없음</div>
-                </>
-              )}
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-3xl font-bold text-slate-900">78</span>
+                <span className="text-slate-600">/100</span>
+              </div>
+              <div className="text-sm text-slate-600">
+                이번 주 기회지수
+              </div>
             </div>
           </div>
+
+          {/* Trending Foreign Models */}
+          <div className="bg-white rounded-2xl p-6 mb-6 border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900">🔥 요즘 뜨는 해외 모델</h3>
+              <Button variant="outline" size="sm">
+                더 보기
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {trendingModels.map((model) => (
+                <div key={model.id} className="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`px-2 py-1 rounded text-xs font-medium ${
+                      model.trend === 'hot' ? 'bg-red-100 text-red-700' :
+                      'bg-orange-100 text-orange-700'
+                    }`}>
+                      {model.trend === 'hot' ? '🔥 HOT' : '📈 급상승'}
+                    </div>
+                    <div className={`px-2 py-1 rounded text-xs ${
+                      model.riskScore > 60 ? 'bg-red-100 text-red-700' :
+                      model.riskScore > 40 ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-green-100 text-green-700'
+                    }`}>
+                      리스크 {model.riskScore}
+                    </div>
+                  </div>
+                  <h4 className="font-medium text-slate-900 mb-1">{model.name}</h4>
+                  <p className="text-sm text-slate-600 mb-2">{model.description}</p>
+                  <p className="text-xs text-slate-500">{model.reason}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* My Watchlist */}
+          {watchlistItems.length > 0 && (
+            <div className="bg-white rounded-2xl p-6 mb-6 border border-slate-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-slate-900">📋 내 관심목록</h3>
+                <Button variant="outline" size="sm">
+                  관리
+                </Button>
+              </div>
+              <div className="space-y-3">
+                {watchlistItems.slice(0, 3).map((item, idx) => (
+                  <div key={idx} className="p-3 bg-slate-50 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            item.riskScore > 60 ? 'bg-red-100 text-red-700' :
+                            item.riskScore > 40 ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            리스크 {item.riskScore}
+                          </span>
+                          <span className="text-xs text-slate-500">{item.category}</span>
+                        </div>
+                        <p className="text-sm font-medium text-slate-900">{item.idea.substring(0, 60)}...</p>
+                        <p className="text-xs text-slate-500">
+                          저장일: {new Date(item.savedAt).toLocaleDateString('ko-KR')}
+                        </p>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        분석하기
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Recent Analyses */}
           {recentAnalyses.length > 0 && (
@@ -278,22 +360,29 @@ function DashboardContent() {
                 onClick={() => router.push('/submit')}
               >
                 <div className="text-left">
-                  <div className="font-medium">아이디어 분석</div>
-                  <div className="text-sm opacity-90">한국 규제 검토받기</div>
+                  <div className="font-medium">새 모델 분석</div>
+                  <div className="text-sm opacity-90">해외 비즈니스 모델 검증</div>
                 </div>
               </Button>
               <Button variant="outline" className="justify-start h-auto p-4">
                 <div className="text-left">
-                  <div className="font-medium">규제 모니터링</div>
-                  <div className="text-sm text-slate-600">최신 변경사항 추적</div>
+                  <div className="font-medium">트렌드 탐색</div>
+                  <div className="text-sm text-slate-600">요즘 뜨는 해외 모델 발견</div>
                 </div>
               </Button>
               <Button variant="outline" className="justify-start h-auto p-4">
                 <div className="text-left">
-                  <div className="font-medium">전문가 상담</div>
-                  <div className="text-sm text-slate-600">한국 전문가와 상담</div>
+                  <div className="font-medium">규제 알림 설정</div>
+                  <div className="text-sm text-slate-600">관심 분야 변화 추적</div>
                 </div>
               </Button>
+            </div>
+            
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-blue-800">
+                <TrendingUp className="w-4 h-4" />
+                <span><strong>이번 주 인기:</strong> AI 도구 현지화, 구독 서비스 모델, 커뮤니티 플랫폼</span>
+              </div>
             </div>
           </div>
 

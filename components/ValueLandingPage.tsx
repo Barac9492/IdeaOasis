@@ -25,12 +25,20 @@ export default function ValueLandingPage() {
           </div>
         </div>
 
-        <button 
-          onClick={() => signInWithPopup(auth, googleProvider)}
-          className="bg-slate-900 text-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-slate-800"
-        >
-          내 아이디어 한국 적합성 검증받기
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button 
+            onClick={() => signInWithPopup(auth, googleProvider)}
+            className="bg-slate-900 text-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-slate-800"
+          >
+            내 아이디어 한국 적합성 검증받기
+          </button>
+          <a
+            href="/trends"
+            className="border border-slate-300 text-slate-700 px-8 py-4 rounded-lg font-medium text-lg hover:bg-slate-50 text-center"
+          >
+            🔥 이번 주 뜨는 해외 모델 보기
+          </a>
+        </div>
       </div>
 
       {/* Proof */}

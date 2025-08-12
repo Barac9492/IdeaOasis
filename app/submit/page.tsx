@@ -1,11 +1,12 @@
 'use client';
 import { useState } from 'react';
-import { AlertTriangle, CheckCircle, DollarSign, Building, FileText } from 'lucide-react';
+import { AlertTriangle, CheckCircle, DollarSign, Building, FileText, Bookmark, Bell } from 'lucide-react';
 
 export default function SubmitIdeaPage() {
   const [idea, setIdea] = useState('');
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [savedToWatchlist, setSavedToWatchlist] = useState(false);
 
   const analyzeIdea = async () => {
     if (!idea.trim()) return;
@@ -48,6 +49,32 @@ export default function SubmitIdeaPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveToWatchlist = async () => {
+    if (!analysis) return;
+    
+    try {
+      // In production, this would save to a database
+      const watchlistItem = {
+        idea: idea,
+        category: analysis.category,
+        riskScore: analysis.riskScore,
+        savedAt: new Date().toISOString()
+      };
+      
+      // For now, save to localStorage
+      const existingWatchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
+      existingWatchlist.push(watchlistItem);
+      localStorage.setItem('watchlist', JSON.stringify(existingWatchlist));
+      
+      setSavedToWatchlist(true);
+      
+      // Show success message
+      setTimeout(() => setSavedToWatchlist(false), 3000);
+    } catch (error) {
+      console.error('Failed to save to watchlist:', error);
     }
   };
 
@@ -212,6 +239,39 @@ export default function SubmitIdeaPage() {
                   <div>5. 성공 사례 벤치마킹 및 차별화 전략 수립</div>
                 </div>
               )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="bg-white border border-slate-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">다음 단계</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  onClick={saveToWatchlist}
+                  disabled={savedToWatchlist}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors ${
+                    savedToWatchlist 
+                      ? 'bg-green-100 text-green-700 border border-green-200' 
+                      : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
+                  }`}
+                >
+                  <Bookmark className="w-4 h-4" />
+                  {savedToWatchlist ? '관심목록에 저장됨' : '관심목록에 저장'}
+                </button>
+                
+                <button className="flex items-center justify-center gap-2 px-4 py-3 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-lg font-medium hover:bg-yellow-100 transition-colors">
+                  <Bell className="w-4 h-4" />
+                  규제 변화 알림 설정
+                </button>
+                
+                <button className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 text-slate-700 border border-slate-200 rounded-lg font-medium hover:bg-slate-100 transition-colors">
+                  <FileText className="w-4 h-4" />
+                  상세 분석 보고서 요청
+                </button>
+              </div>
+              
+              <div className="mt-4 p-3 bg-slate-50 rounded-lg text-sm text-slate-600">
+                💡 <strong>다음에 확인해보세요:</strong> 관심목록에서 추적 중인 모델들의 업데이트, 새로운 트렌드 모델 발견, 규제 변화 알림
+              </div>
             </div>
           </div>
         )}
