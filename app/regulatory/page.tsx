@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, TrendingUp, Calendar, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import LiveRegulatoryMonitor from '@/components/LiveRegulatoryMonitor';
+// import LiveRegulatoryMonitor from '@/components/LiveRegulatoryMonitor';
 import AuthGuard from '@/components/AuthGuard';
 
 export default function RegulatoryDashboardPage() {
@@ -97,7 +97,12 @@ export default function RegulatoryDashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Live Monitor */}
             <div className="lg:col-span-2">
-              <LiveRegulatoryMonitor />
+              <Card className="p-6">
+                <h3 className="font-semibold text-slate-900 mb-4">실시간 규제 모니터링</h3>
+                <div className="text-center py-12 text-slate-500">
+                  규제 모니터링 기능이 곧 추가됩니다
+                </div>
+              </Card>
             </div>
 
             {/* Right Column - Insights & Actions */}
