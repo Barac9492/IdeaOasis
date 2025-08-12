@@ -9,7 +9,7 @@ import {
   GovDataSource,
   AlertType 
 } from './koreanGovAPIs';
-import { emailNotificationService } from './emailNotificationService';
+// import { emailNotificationService } from './emailNotificationService'; // Removed for simplified regulatory compliance focus
 import crypto from 'crypto';
 
 export interface RegulatoryUpdate {
@@ -769,7 +769,7 @@ export class EnhancedRegulatoryMonitoringService {
       };
 
       // Send to all relevant users based on industry filters
-      await emailNotificationService.notifyAllUsers(emailAlert, [alert.severity]);
+      // await emailNotificationService.notifyAllUsers(emailAlert, [alert.severity]); // Disabled for simplified focus
       
       console.log(`✅ Critical alert sent: ${alert.title}`);
     } catch (error) {
@@ -818,7 +818,7 @@ export class EnhancedRegulatoryMonitoringService {
       }))
     };
 
-    await emailNotificationService.notifyAllUsers(batchAlert, ['high']);
+    // await emailNotificationService.notifyAllUsers(batchAlert, ['high']); // Disabled for simplified focus
   }
 
   private async sendSlackAlert(alert: RegulatoryAlert): Promise<void> {
