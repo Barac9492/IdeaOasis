@@ -96,8 +96,8 @@ export default function HomePage() {
       <section>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-slate-900">Business Opportunities</h2>
-          <a href="/ideas/enhanced" className="text-sm text-blue-600 hover:text-blue-700">
-            View all →
+          <a href="/submit" className="text-sm text-blue-600 hover:text-blue-700">
+            Check your idea →
           </a>
         </div>
 
