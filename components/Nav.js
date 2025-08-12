@@ -33,7 +33,7 @@ export default function Nav() {
               href="/submit" 
               className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors font-medium"
             >
-              Check Your Idea
+              아이디어 검증
             </Link>
             {user && (
               <Link 
@@ -47,7 +47,7 @@ export default function Nav() {
               href="/regulatory" 
               className="text-slate-700 hover:text-slate-900 transition-colors font-medium"
             >
-              Regulations
+              규제 정보
             </Link>
           </div>
 
@@ -85,7 +85,7 @@ export default function Nav() {
             Home
           </Link>
           <Link href="/submit" className="text-xs bg-slate-900 text-white px-3 py-2 rounded">
-            Check Idea
+            아이디어 검증
           </Link>
           {user && (
             <Link href="/dashboard" className="text-xs text-slate-600 hover:text-slate-900">
@@ -93,7 +93,7 @@ export default function Nav() {
             </Link>
           )}
           <Link href="/regulatory" className="text-xs text-slate-600 hover:text-slate-900">
-            Regulations
+            규제 정보
           </Link>
         </div>
       </div>

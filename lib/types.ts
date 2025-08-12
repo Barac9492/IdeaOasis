@@ -50,6 +50,7 @@ export interface RegulatoryAnalysis {
   regulations: string[];
   costs: ComplianceCosts;
   competitors: string[];
+  successStories?: string[];
   timeline: string;
   verdict: ComplianceVerdict;
   failureExamples?: string[];

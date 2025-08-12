@@ -41,11 +41,11 @@ const COST_ESTIMATES = {
 };
 
 const KOREAN_MARKET_LEADERS = {
-  'fintech': ['Kakao Pay', 'Toss', 'PAYCO'],
-  'ecommerce': ['Coupang', '11st', 'Gmarket'],
-  'food_delivery': ['Baemin', 'Yogiyo', 'Coupang Eats'],
-  'transportation': ['Kakao T', 'Tmap', 'Socar'],
-  'accommodation': ['Yanolja', '여기어때', 'Agoda Korea']
+  'fintech': ['Kakao Pay - 시장 점유율 85%', 'Toss - 누적 사용자 2,000만명', 'PAYCO - 네이버 생태계'],
+  'ecommerce': ['Coupang - 기업가치 60조원, 아마존 압도', '11st - SK 그룹 계열', 'Gmarket - 이베이 코리아'],
+  'food_delivery': ['Baemin - 시장 점유율 80%, 딜리버리히어로 매각', 'Yogiyo - 독일 딜리버리히어로 소유', 'Coupang Eats - 쿠팡 생태계'],
+  'transportation': ['Kakao T - 시장 점유율 98%, 사용자 2,300만명', 'Tmap - SK텔레콤, 내비게이션+택시', 'Socar - 카셰어링 1위'],
+  'accommodation': ['Yanolja - 국내 숙박 1위, 야놀자 그룹', '여기어때 - 위메프 계열', 'Agoda Korea - 부킹홀딩스 계열']
 };
 
 function categorizeIdea(ideaText: string): string {
@@ -95,8 +95,36 @@ function calculateRiskScore(category: string, ideaText: string): number {
 }
 
 function getRelevantCompetitors(category: string): string[] {
-  const competitors = KOREAN_MARKET_LEADERS[category as keyof typeof KOREAN_MARKET_LEADERS] || [];
-  return competitors.map(comp => `${comp} - Leading Korean player`);
+  return KOREAN_MARKET_LEADERS[category as keyof typeof KOREAN_MARKET_LEADERS] || [];
+}
+
+function getKoreanSuccessStories(category: string): string[] {
+  const successStories = {
+    'fintech': [
+      'Toss: 간편 송금에서 시작해 종합 금융 플랫폼으로 확장',
+      'Kakao Pay: 카카오톡 연동으로 사용자 기반 확보 후 금융 서비스 다변화'
+    ],
+    'ecommerce': [
+      'Coupang: 아마존 모델을 한국에 맞게 조정, 로켓배송으로 차별화',
+      '11st: 오픈마켓에서 시작해 라이브 커머스로 진화'
+    ],
+    'food_delivery': [
+      'Baedal Minjok: 한국인 취향에 맞는 UI/UX와 마케팅으로 시장 장악',
+      'Yogiyo: 요기요가요~ 브랜딩으로 친근함 어필, 빠른 배달 시스템 구축'
+    ],
+    'transportation': [
+      'Kakao T: 기존 택시 시스템과 협력하며 규제 준수, 카카오 생태계 활용',
+      'Socar: 카셰어링이라는 새로운 카테고리 창조, 보험사와 파트너십'
+    ],
+    'accommodation': [
+      'Yanolja: 모텔 예약에서 시작해 종합 여행 플랫폼으로 확장',
+      '여기어때: 실시간 예약 시스템과 할인 혜택으로 차별화'
+    ]
+  };
+  
+  return successStories[category as keyof typeof successStories] || [
+    '해당 분야의 성공한 한국 기업 사례를 추가 분석이 필요합니다'
+  ];
 }
 
 function getRegulations(category: string): string[] {
@@ -152,6 +180,7 @@ export async function POST(req: NextRequest) {
     const regulations = getRegulations(category);
     const costs = generateCostEstimate();
     const competitors = getRelevantCompetitors(category);
+    const successStories = getKoreanSuccessStories(category);
     const timeline = getTimeline(riskScore);
     const verdict = getVerdict(riskScore);
 
@@ -177,33 +206,34 @@ export async function POST(req: NextRequest) {
         'Strong local competition expected',
         'Market dominated by Korean companies'
       ],
+      successStories,
       timeline,
       verdict,
       failureExamples,
       keyInsights: [
-        `Business categorized as ${category} industry`,
-        `${regulations.length} major regulations identified`,
-        `Estimated ${Math.floor(regulations.length * 2)}-${Math.floor(regulations.length * 4)} months for full compliance`,
-        competitors.length > 0 ? `Competing against established players like ${competitors[0]?.split(' - ')[0]}` : 'Local competition analysis required'
+        `${category} 분야로 분류됨`,
+        `${regulations.length}개 주요 규제 확인됨`,
+        `전체 컴플라이언스 완료까지 ${Math.floor(regulations.length * 2)}-${Math.floor(regulations.length * 4)}개월 예상`,
+        competitors.length > 0 ? `기존 한국 강자들과 경쟁 필요` : '현지 경쟁 환경 추가 분석 필요'
       ],
       recommendations: riskScore > 70 ? [
-        'Consult with Korean regulatory lawyer immediately',
-        'Consider significant business model modifications',
-        'Research successful local alternatives and partnerships',
-        'Prepare substantial regulatory compliance budget',
-        'Plan 12+ month regulatory preparation period'
+        '한국 규제 전문 변호사와 즉시 상담',
+        '비즈니스 모델 대폭 수정 검토',
+        '성공한 현지 기업과의 파트너십 또는 라이선스 모델 고려',
+        '규제 준수 비용 ₩20-50M 확보',
+        '12개월 이상의 규제 준비 기간 계획'
       ] : riskScore > 40 ? [
-        'Engage Korean legal counsel early in process',
-        'Set aside ₩10-20M for regulatory compliance',
-        'Consider partnership with established Korean company',
-        'Plan 6-month regulatory preparation timeline',
-        'Conduct detailed competitor analysis'
+        '한국 법무법인과 조기 계약',
+        '규제 준수 비용 ₩10-20M 확보',
+        '기존 한국 기업과 파트너십 고려',
+        '6개월 규제 준비 타임라인 계획',
+        '경쟁사 현지화 전략 상세 분석'
       ] : [
-        'Standard regulatory compliance process expected',
-        'Budget ₩5-10M for licensing and legal setup',
-        'Target 3-month regulatory timeline',
-        'Consider local partnerships for market entry',
-        'Monitor regulatory changes during development'
+        '일반적인 규제 준수 절차 예상',
+        '라이선스 및 법무 비용 ₩5-10M 예산',
+        '3개월 규제 승인 타임라인 목표',
+        '시장 진입을 위한 현지 파트너십 고려',
+        '개발 중 규제 변화 지속 모니터링'
       ]
     };
 
