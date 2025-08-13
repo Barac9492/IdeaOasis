@@ -79,36 +79,95 @@ export default function SubmitIdeaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold text-slate-900 mb-8">
-          해외 비즈니스 모델 한국 적합성 검증
-        </h1>
+        {/* Progress Indicator */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+            <span>1/2</span> <span>아이디어 입력</span>
+          </div>
+        </div>
         
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-          <p className="text-blue-800 text-sm">
-            💡 <strong>예시:</strong> "Stripe 같은 온라인 결제 서비스", "Discord 같은 게이머 커뮤니티 플랫폼", "Notion 같은 협업 도구"
+        <div className="text-center mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+            어떤 해외 모델을 분석할까요?
+          </h1>
+          <p className="text-lg text-slate-600">
+            간단히 설명해주시면 AI가 한국 진출 가능성을 분석해드립니다
           </p>
         </div>
 
-        {/* Input */}
+        {/* Quick Examples - Click to Fill */}
         <div className="mb-8">
-          <label className="block text-sm font-medium text-slate-900 mb-2">
-            한국에 도입하고 싶은 해외 비즈니스 모델을 설명해주세요
+          <h3 className="text-lg font-semibold mb-4 text-slate-900">🚀 인기 예시 (클릭하면 자동 입력)</h3>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <button
+              onClick={() => setIdea("Stripe 같은 온라인 결제 서비스를 한국에서 운영하고 싶습니다. 개발자들이 쉽게 결제 시스템을 연동할 수 있는 API 서비스입니다.")}
+              className="p-4 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span>💳</span>
+                <span className="font-semibold text-sm">Stripe (결제)</span>
+              </div>
+              <p className="text-xs text-slate-600">온라인 결제 API 서비스</p>
+            </button>
+            
+            <button
+              onClick={() => setIdea("Discord 같은 게이머 커뮤니티 플랫폼을 한국에서 운영하고 싶습니다. 음성 채팅과 텍스트 채팅이 가능한 게임 커뮤니티 서비스입니다.")}
+              className="p-4 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span>🎮</span>
+                <span className="font-semibold text-sm">Discord (소셜)</span>
+              </div>
+              <p className="text-xs text-slate-600">게이머 커뮤니티 플랫폼</p>
+            </button>
+            
+            <button
+              onClick={() => setIdea("Notion 같은 협업 도구를 한국에서 서비스하고 싶습니다. 문서 작성, 데이터베이스, 프로젝트 관리가 모두 가능한 올인원 워크스페이스입니다.")}
+              className="p-4 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span>📝</span>
+                <span className="font-semibold text-sm">Notion (SaaS)</span>
+              </div>
+              <p className="text-xs text-slate-600">올인원 협업 도구</p>
+            </button>
+          </div>
+        </div>
+
+        {/* Input Section */}
+        <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 mb-8">
+          <label className="block text-lg font-semibold text-slate-900 mb-4">
+            또는 직접 입력하세요
           </label>
           <textarea
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
-            placeholder="예: 미국의 DoorDash 같은 음식 배달 플랫폼을 한국에서 런칭하고 싶습니다. 레스토랑과 고객을 연결하고 배달 기사들이 음식을 배달하는 서비스입니다..."
-            className="w-full h-32 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="예: 미국의 Shopify 같은 이커머스 플랫폼을 한국에서 운영하고 싶습니다. 누구나 쉽게 온라인 쇼핑몰을 만들 수 있는 서비스입니다..."
+            className="w-full h-32 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           />
-          <button
-            onClick={analyzeIdea}
-            disabled={!idea.trim() || loading}
-            className="mt-4 bg-slate-900 text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? '한국 규제 환경 분석 중...' : '한국 적합성 분석하기'}
-          </button>
+          <div className="mt-4 flex items-center justify-between">
+            <div className="text-sm text-slate-500">
+              {idea.length > 20 ? '✅ 충분합니다!' : '최소 20자 이상 작성해주세요'}
+            </div>
+            <button
+              onClick={analyzeIdea}
+              disabled={!idea.trim() || loading || idea.length < 20}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-700 hover:to-blue-800 transition-all"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  AI 분석 중...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  ⚡ 30초 분석 시작
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Analysis Results */}
