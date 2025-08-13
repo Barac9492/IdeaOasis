@@ -134,7 +134,6 @@ export default function ValueLandingPage() {
             </a>
           </div>
         </div>
-      </div>
 
       <div className="bg-slate-100 py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
