@@ -32,65 +32,78 @@ export default function ValueLandingPage() {
         </div>
         
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <span>⚡</span>
-            <span>30초 무료 체험</span>
-          </div>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-            내 아이디어가 한국에서
-            <span className="block text-blue-600 mt-2">성공할 수 있을까?</span>
+          <h1 className="text-4xl sm:text-6xl font-bold text-slate-900 mb-4 leading-tight">
+            해외 모델이 한국에서 성공할까?
           </h1>
-          <p className="text-lg sm:text-xl text-slate-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-            <strong className="text-slate-900">Stripe, Discord, Notion 같은 해외 모델</strong>이 한국에 도입될 때<br className="hidden sm:block" />
-            어떤 규제 리스크가 있는지 <span className="text-blue-600 font-semibold">즉시 확인</span>해보세요.
+          <p className="text-lg sm:text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+            AI가 30초 만에 알려드립니다
           </p>
           
-          {/* Interactive Demo - Click to See Magic */}
-          <div className="bg-white border-2 border-blue-200 rounded-2xl p-6 max-w-2xl mx-auto mb-8 text-left hover:shadow-lg transition-shadow cursor-pointer group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm">⚡</span>
+          {/* LIVE Auto-Playing Demo */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 max-w-3xl mx-auto mb-8 text-left relative overflow-hidden">
+            {/* Terminal-like header */}
+            <div className="flex items-center gap-2 mb-6">
+              <div className="flex gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+              <span className="text-slate-300 text-sm ml-2">IdeaOasis AI 분석 시연</span>
+            </div>
+            
+            {/* Auto-typing effect */}
+            <div className="space-y-4 text-white font-mono text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">$</span>
+                <span className="text-white">분석할 모델: "Stripe 같은 온라인 결제 서비스"</span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-blue-400">></span>
+                <span className="text-slate-300">AI 분석 시작...</span>
+                <div className="w-2 h-4 bg-white animate-pulse"></div>
+              </div>
+              
+              <div className="pl-4 space-y-2 text-slate-300">
+                <div className="flex justify-between">
+                  <span>전자금융거래법 검토</span>
+                  <span className="text-red-400">⚠️ 높은 리스크</span>
                 </div>
-                <span className="font-semibold text-slate-900">즉시 체험해보기</span>
+                <div className="flex justify-between">
+                  <span>개인정보보호법 검토</span>
+                  <span className="text-yellow-400">⚡ 중간 리스크</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>한국 성공 사례 분석</span>
+                  <span className="text-green-400">✅ 토스, 카카오페이</span>
+                </div>
               </div>
-              <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium group-hover:bg-blue-200 transition-colors">
-                클릭해보세요 →
+              
+              <div className="border-t border-slate-600 pt-4">
+                <div className="flex items-center justify-between text-lg">
+                  <span className="text-white font-bold">종합 리스크 점수:</span>
+                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full font-bold">75/100</span>
+                </div>
+                <div className="text-slate-300 text-xs mt-2">
+                  ⚠️ 높은 규제 리스크 - 현지 파트너십 필수
+                </div>
               </div>
             </div>
             
-            <div className="space-y-3 text-sm">
-              <div className="group/item flex justify-between items-center p-3 bg-slate-50 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
-                <span className="flex items-center gap-2">
-                  <span>💳</span>
-                  <span>"Stripe 같은 온라인 결제 서비스"</span>
-                </span>
-                <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium group-hover/item:bg-orange-200 transition-colors">리스크 75</span>
-              </div>
-              
-              <div className="group/item flex justify-between items-center p-3 bg-slate-50 rounded-lg hover:bg-green-50 transition-colors cursor-pointer">
-                <span className="flex items-center gap-2">
-                  <span>🎮</span>
-                  <span>"Discord 같은 게이머 커뮤니티"</span>
-                </span>
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium group-hover/item:bg-green-200 transition-colors">리스크 35</span>
-              </div>
-              
-              <div className="group/item flex justify-between items-center p-3 bg-slate-50 rounded-lg hover:bg-yellow-50 transition-colors cursor-pointer">
-                <span className="flex items-center gap-2">
-                  <span>📝</span>
-                  <span>"Notion 같은 협업 도구"</span>
-                </span>
-                <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-medium group-hover/item:bg-yellow-200 transition-colors">리스크 45</span>
-              </div>
+            {/* Floating "LIVE" indicator */}
+            <div className="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold animate-pulse">
+              LIVE 시연
             </div>
-            
-            <div className="mt-4 text-center">
-              <div className="inline-flex items-center gap-2 text-xs text-slate-600 bg-slate-100 px-3 py-2 rounded-full">
-                <span>👆</span>
-                <span>실제 AI 분석 결과 • 클릭하면 상세 분석 보기</span>
-              </div>
-            </div>
+          </div>
+          
+          {/* Simple emotion-driven question */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">
+              내 아이디어도 확인해보고 싶다면?
+            </h2>
+            <p className="text-slate-600 mb-6">
+              👆 위와 똑같은 분석을 내 아이디어로 받아보세요
+            </p>
           </div>
         </div>
         
@@ -126,50 +139,35 @@ export default function ValueLandingPage() {
           </div>
         </div>
 
-        {/* 직관적 CTA Section - ONE CLEAR ACTION */}
+        {/* ZERO-FRICTION CTA - Pure Emotion → Action */}
         <div className="text-center">
           {user ? (
-            /* Authenticated User - Direct to Action */
-            <div className="mb-8">
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 max-w-lg mx-auto">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="text-green-600">✓</span>
-                  <span className="font-semibold text-green-800">로그인 완료! 이제 분석을 시작하세요</span>
-                </div>
-              </div>
-              
-              {/* Single Primary Action */}
+            /* Authenticated User - Direct to Magic */
+            <div className="mb-8">              
               <button 
                 onClick={() => router.push('/submit')}
-                className="group bg-gradient-to-r from-blue-600 to-blue-700 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 transition-all duration-200 shadow-xl hover:shadow-2xl relative overflow-hidden mb-4"
+                className="group bg-gradient-to-r from-green-600 to-green-700 text-white px-16 py-6 rounded-2xl font-bold text-2xl hover:from-green-700 hover:to-green-800 transform hover:scale-105 transition-all duration-200 shadow-2xl hover:shadow-3xl relative overflow-hidden mb-4"
               >
-                <span className="relative z-10">✨ 내 아이디어 분석 시작</span>
+                <span className="relative z-10">🚀 내 아이디어 분석받기</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
               </button>
               
-              <div className="text-sm text-slate-600">
-                또는 <button onClick={() => router.push('/trends')} className="text-blue-600 hover:text-blue-700 underline">인기 트렌드 먼저 둘러보기</button>
-              </div>
+              <p className="text-slate-600 text-sm">30초 후에 위와 같은 결과를 받게됩니다</p>
             </div>
           ) : (
-            /* Unauthenticated User - ONE CLEAR PATH */
+            /* Unauthenticated User - Pure Desire */
             <div className="mb-8">
-              {/* Dominant Single Action */}
               <button 
                 onClick={() => signInWithPopup(auth, googleProvider)}
-                className="group bg-gradient-to-r from-blue-600 to-blue-700 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 transition-all duration-200 shadow-xl hover:shadow-2xl relative overflow-hidden mb-4"
+                className="group bg-gradient-to-r from-orange-500 to-red-500 text-white px-16 py-6 rounded-2xl font-bold text-2xl hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-200 shadow-2xl hover:shadow-3xl relative overflow-hidden mb-4 animate-pulse"
               >
-                <span className="relative z-10">✨ 30초 무료 체험 시작</span>
+                <span className="relative z-10">🔥 내 것도 해보기</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
               </button>
               
-              <div className="text-sm text-slate-600 mb-4">
-                Google 계정으로 즉시 시작 • 신용카드 불필요
-              </div>
-              
-              <div className="text-sm text-slate-600">
-                궁금한 점이 있나요? <a href="/about" className="text-blue-600 hover:text-blue-700 underline">작동 원리 알아보기</a>
-              </div>
+              <p className="text-slate-600 text-sm">
+                Google로 3초 로그인 → 바로 분석 시작
+              </p>
             </div>
           )}
           

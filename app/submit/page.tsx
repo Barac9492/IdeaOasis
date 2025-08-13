@@ -52,6 +52,49 @@ export default function SubmitIdeaPage() {
     }
   };
 
+  const analyzePresetIdea = async (presetText: string) => {
+    setIdea(presetText);
+    setLoading(true);
+    
+    try {
+      const response = await fetch('/api/regulatory/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idea: presetText }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setAnalysis(data.analysis);
+      } else {
+        console.error('Analysis failed:', data.error);
+        setAnalysis({
+          riskScore: 50,
+          regulations: ['Analysis failed - please try again'],
+          costs: { licenses: 'N/A', legal: 'N/A', compliance: 'N/A' },
+          competitors: ['Analysis unavailable'],
+          timeline: 'Unable to determine',
+          verdict: 'ANALYSIS FAILED - PLEASE RETRY'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to analyze idea:', error);
+      setAnalysis({
+        riskScore: 50,
+        regulations: ['Network error - please try again'],
+        costs: { licenses: 'N/A', legal: 'N/A', compliance: 'N/A' },
+        competitors: ['Analysis unavailable'],
+        timeline: 'Unable to determine',
+        verdict: 'CONNECTION FAILED - PLEASE RETRY'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const saveToWatchlist = async () => {
     if (!analysis) return;
     
@@ -89,84 +132,76 @@ export default function SubmitIdeaPage() {
         </div>
         
         <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-            어떤 해외 모델을 분석할까요?
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            어떤 걸 분석할까요?
           </h1>
           <p className="text-lg text-slate-600">
-            간단히 설명해주시면 AI가 한국 진출 가능성을 분석해드립니다
+            클릭만 하면 바로 분석 시작!
           </p>
         </div>
 
-        {/* Quick Examples - Click to Fill */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4 text-slate-900">🚀 인기 예시 (클릭하면 자동 입력)</h3>
-          <div className="grid sm:grid-cols-3 gap-3">
+        {/* VISUAL PICKER - No Thinking Required */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {[
+            { emoji: "💳", name: "Stripe", desc: "온라인 결제", risk: 75, text: "Stripe 같은 온라인 결제 서비스를 한국에서 운영하고 싶습니다. 개발자들이 쉽게 결제 시스템을 연동할 수 있는 API 서비스입니다." },
+            { emoji: "🎮", name: "Discord", desc: "게이머 커뮤니티", risk: 35, text: "Discord 같은 게이머 커뮤니티 플랫폼을 한국에서 운영하고 싶습니다. 음성 채팅과 텍스트 채팅이 가능한 게임 커뮤니티 서비스입니다." },
+            { emoji: "📝", name: "Notion", desc: "협업 도구", risk: 45, text: "Notion 같은 협업 도구를 한국에서 서비스하고 싶습니다. 문서 작성, 데이터베이스, 프로젝트 관리가 모두 가능한 올인원 워크스페이스입니다." },
+            { emoji: "🛒", name: "Shopify", desc: "이커머스 플랫폼", risk: 55, text: "Shopify 같은 이커머스 플랫폼을 한국에서 운영하고 싶습니다. 누구나 쉽게 온라인 쇼핑몰을 만들 수 있는 서비스입니다." },
+            { emoji: "🏠", name: "Airbnb", desc: "숙박 공유", risk: 85, text: "Airbnb 같은 숙박 공유 플랫폼을 한국에서 운영하고 싶습니다. 개인이 자신의 집이나 방을 여행객에게 대여하는 서비스입니다." },
+            { emoji: "🚗", name: "Uber", desc: "차량 공유", risk: 90, text: "Uber 같은 차량 공유 서비스를 한국에서 운영하고 싶습니다. 일반인이 자신의 차량으로 승객을 태워주는 플랫폼입니다." }
+          ].map((model, idx) => (
             <button
-              onClick={() => setIdea("Stripe 같은 온라인 결제 서비스를 한국에서 운영하고 싶습니다. 개발자들이 쉽게 결제 시스템을 연동할 수 있는 API 서비스입니다.")}
-              className="p-4 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+              key={idx}
+              onClick={() => analyzePresetIdea(model.text)}
+              className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-blue-400 hover:shadow-lg transition-all duration-200 text-left"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <span>💳</span>
-                <span className="font-semibold text-sm">Stripe (결제)</span>
+              <div className="text-center">
+                <div className="text-4xl mb-3">{model.emoji}</div>
+                <h3 className="text-xl font-bold text-slate-900 mb-1">{model.name}</h3>
+                <p className="text-slate-600 text-sm mb-4">{model.desc}</p>
+                
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${ 
+                  model.risk > 70 ? 'bg-red-100 text-red-700' :
+                  model.risk > 50 ? 'bg-yellow-100 text-yellow-700' :
+                  'bg-green-100 text-green-700'
+                }`}>
+                  예상 리스크: {model.risk}
+                </div>
               </div>
-              <p className="text-xs text-slate-600">온라인 결제 API 서비스</p>
-            </button>
-            
-            <button
-              onClick={() => setIdea("Discord 같은 게이머 커뮤니티 플랫폼을 한국에서 운영하고 싶습니다. 음성 채팅과 텍스트 채팅이 가능한 게임 커뮤니티 서비스입니다.")}
-              className="p-4 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span>🎮</span>
-                <span className="font-semibold text-sm">Discord (소셜)</span>
+              
+              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center">
+                <span className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                  ⚡ 클릭해서 분석하기
+                </span>
               </div>
-              <p className="text-xs text-slate-600">게이머 커뮤니티 플랫폼</p>
             </button>
-            
-            <button
-              onClick={() => setIdea("Notion 같은 협업 도구를 한국에서 서비스하고 싶습니다. 문서 작성, 데이터베이스, 프로젝트 관리가 모두 가능한 올인원 워크스페이스입니다.")}
-              className="p-4 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span>📝</span>
-                <span className="font-semibold text-sm">Notion (SaaS)</span>
-              </div>
-              <p className="text-xs text-slate-600">올인원 협업 도구</p>
-            </button>
-          </div>
+          ))}
         </div>
 
-        {/* Input Section */}
-        <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 mb-8">
-          <label className="block text-lg font-semibold text-slate-900 mb-4">
-            또는 직접 입력하세요
-          </label>
-          <textarea
-            value={idea}
-            onChange={(e) => setIdea(e.target.value)}
-            placeholder="예: 미국의 Shopify 같은 이커머스 플랫폼을 한국에서 운영하고 싶습니다. 누구나 쉽게 온라인 쇼핑몰을 만들 수 있는 서비스입니다..."
-            className="w-full h-32 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          />
-          <div className="mt-4 flex items-center justify-between">
-            <div className="text-sm text-slate-500">
-              {idea.length > 20 ? '✅ 충분합니다!' : '최소 20자 이상 작성해주세요'}
+        {/* Simple Custom Input - Minimal */}
+        <div className="text-center">
+          <div className="inline-block bg-white rounded-2xl p-6 shadow-lg border border-slate-200 max-w-2xl">
+            <h3 className="text-lg font-semibold mb-4">다른 아이디어가 있나요?</h3>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={idea}
+                onChange={(e) => setIdea(e.target.value)}
+                placeholder="예: Netflix 같은 동영상 스트리밍"
+                className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button
+                onClick={analyzeIdea}
+                disabled={!idea.trim() || loading || idea.length < 10}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-all whitespace-nowrap"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  "분석하기"
+                )}
+              </button>
             </div>
-            <button
-              onClick={analyzeIdea}
-              disabled={!idea.trim() || loading || idea.length < 20}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-700 hover:to-blue-800 transition-all"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  AI 분석 중...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  ⚡ 30초 분석 시작
-                </span>
-              )}
-            </button>
           </div>
         </div>
 
