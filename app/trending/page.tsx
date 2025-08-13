@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { TrendingUp, Clock, Users, Eye, AlertTriangle, CheckCircle, Fire } from 'lucide-react';
+import { TrendingUp, Clock, Users, Eye, AlertTriangle, CheckCircle, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Real patterns we see in regulatory analysis
@@ -272,7 +272,7 @@ export default function TrendingPage() {
             {/* Hot Categories */}
             <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Fire className="w-5 h-5 text-orange-600" />
+                <Flame className="w-5 h-5 text-orange-600" />
                 인기 카테고리
               </h3>
               
