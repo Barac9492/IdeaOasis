@@ -36,16 +36,16 @@ export default function Nav() {
               About
             </Link>
             <Link 
-              href="/submit" 
-              className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors font-medium"
+              href="/subscribe" 
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
             >
-              아이디어 검증
+              📧 Newsletter
             </Link>
             <Link 
-              href="/trends" 
+              href="/trending" 
               className="text-slate-700 hover:text-slate-900 transition-colors font-medium"
             >
-              트렌드 모델
+              🔥 트렌드
             </Link>
             {user && (
               <Link 
@@ -93,11 +93,11 @@ export default function Nav() {
           <Link href="/about" className="text-xs text-slate-600 hover:text-slate-900">
             About
           </Link>
-          <Link href="/submit" className="text-xs bg-slate-900 text-white px-3 py-2 rounded">
-            검증
+          <Link href="/subscribe" className="text-xs bg-red-600 text-white px-3 py-2 rounded">
+            📧 Newsletter
           </Link>
-          <Link href="/trends" className="text-xs text-slate-600 hover:text-slate-900">
-            트렌드
+          <Link href="/trending" className="text-xs text-slate-600 hover:text-slate-900">
+            🔥 트렌드
           </Link>
           {user && (
             <Link href="/dashboard" className="text-xs text-slate-600 hover:text-slate-900">

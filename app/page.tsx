@@ -29,16 +29,10 @@ export default function HomePage() {
     };
   }, []);
 
-  // Show landing page for unauthenticated users
+  // Always show landing page first - defer auth check
   if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">인증 상태 확인 중...</p>
-        </div>
-      </div>
-    );
+    // Show landing page while auth loads in background
+    return <ValueLandingPage />;
   }
 
   // Show landing page for unauthenticated users
