@@ -1,0 +1,405 @@
+[
+  {
+    "id": "b2b-kpi-dashboard-1",
+    "title": "오프라인 상점용 마이크로 B2B KPI 대시보드",
+    "summary": "소상공인 대상 매출/재고/고객 데이터를 실시간으로 시각화하는 간단한 대시보드 서비스. Make + Google Sheets + Appsheet로 완전 자동화.",
+    "sourceURL": "https://ideaoasis.co.kr/internal-research",
+    "sourcePlatform": "아이디어오아시스",
+    "timeBudgetHoursPerWeek": 8,
+    "starterCapitalKRW": 5000000,
+    "paybackMonths": 6,
+    "automationPct": 70,
+    "toolStack": ["Make", "Google Sheets", "Appsheet", "Stripe"],
+    "weekdayMicrotasks": [
+      "월: 상점 10곳에 DM 발송 (20분)",
+      "화: 전날 응답 정리 및 팔로업 (15분)",
+      "수: 신규 템플릿 아이디어 리서치 (20분)",
+      "목: 기존 고객 피드백 확인 (15분)",
+      "금: 다음주 마케팅 계획 수립 (20분)"
+    ],
+    "weekendSprint": [
+      "토: 1개 업종 전용 템플릿 제작 (2시간)",
+      "일: 자동화 워크플로우 개선 (1시간)"
+    ],
+    "firstTenCustomersPlaybook": [
+      {
+        "channel": "네이버 카페 (소상공인 커뮤니티)",
+        "steps": [
+          "매일 5개 카페에 도움되는 팁 공유",
+          "DM으로 무료 대시보드 체험 제안",
+          "3일 체험 후 월 20만원 구독 전환"
+        ]
+      },
+      {
+        "channel": "직접 방문 (근처 상점)",
+        "steps": [
+          "반경 2km 내 상점 20곳 리스트업",
+          "점심시간 방문하여 명함 + 1페이지 설명서",
+          "일주일 후 전화 팔로업"
+        ]
+      }
+    ],
+    "validationSteps7Day": [
+      {
+        "day": 1,
+        "task": "무료 템플릿 5개 제작 완료",
+        "passFailCriteria": "Google Sheets 연동 자동화 100% 작동",
+        "timeRequired": "4시간"
+      },
+      {
+        "day": 3,
+        "task": "테스트 고객 3명 확보",
+        "passFailCriteria": "실제 데이터로 대시보드 사용 중",
+        "timeRequired": "2시간"
+      },
+      {
+        "day": 7,
+        "task": "유료 전환 1건 이상 달성",
+        "passFailCriteria": "월 20만원 구독 시작",
+        "timeRequired": "1시간"
+      }
+    ],
+    "riskKillers": [
+      {
+        "risk": "상점주들이 디지털 도구에 거부감",
+        "cheapTest": "3일간 무료 체험으로 효과 직접 체감",
+        "killThreshold": "10명 중 0명 관심시 포기"
+      },
+      {
+        "risk": "경쟁사 대비 차별화 부족",
+        "cheapTest": "기존 도구 3개 체험해보고 불편함 파악",
+        "killThreshold": "명확한 차별점 없으면 포기"
+      }
+    ],
+    "mondayStartable": true,
+    "tags": ["B2B", "대시보드", "소상공인", "자동화"]
+  },
+  {
+    "id": "linkedin-koreanizer-2", 
+    "title": "미국 창업자 대상 LinkedIn 한국화 서비스",
+    "summary": "영어 LinkedIn 포스트를 한국 비즈니스 문화에 맞게 번역+로컬라이징. AI 번역 + 인간 검수로 구독형 서비스 제공.",
+    "sourceURL": "https://ideaoasis.co.kr/internal-research",
+    "sourcePlatform": "아이디어오아시스", 
+    "timeBudgetHoursPerWeek": 8,
+    "starterCapitalKRW": 3000000,
+    "paybackMonths": 4,
+    "automationPct": 60,
+    "toolStack": ["Claude/Gemini", "Notion", "Luma/Cal.com", "Stripe"],
+    "weekdayMicrotasks": [
+      "월-금: 타겟 창업자 20명에게 LinkedIn DM (각 15분)",
+      "매일: AI 번역 결과 인간 검수 1-2건 (20분)"
+    ],
+    "weekendSprint": [
+      "토: 이번주 고객 피드백 반영한 번역 템플릿 업데이트 (2시간)",  
+      "일: 신규 마케팅 콘텐츠 제작 (1시간)"
+    ],
+    "firstTenCustomersPlaybook": [
+      {
+        "channel": "LinkedIn 직접 접촉",
+        "steps": [
+          "한국 진출 관심있는 미국 창업자 100명 리스트업",
+          "무료 포스트 1개 번역해서 DM 발송",
+          "월 $200 구독 서비스 제안"
+        ]
+      }
+    ],
+    "validationSteps7Day": [
+      {
+        "day": 1,
+        "task": "AI 번역 워크플로우 구축",
+        "passFailCriteria": "영어→한국어 번역 품질 80% 이상",
+        "timeRequired": "3시간"
+      },
+      {
+        "day": 5,
+        "task": "테스트 고객 5명 확보",
+        "passFailCriteria": "무료 번역 서비스 만족도 4/5 이상",
+        "timeRequired": "2시간"
+      },
+      {
+        "day": 7,
+        "task": "유료 고객 1명 전환",
+        "passFailCriteria": "월 $200 구독 시작",
+        "timeRequired": "1시간"
+      }
+    ],
+    "riskKillers": [
+      {
+        "risk": "구글 번역으로 충분하다는 인식",
+        "cheapTest": "구글 번역 vs 우리 서비스 A/B 테스트",
+        "killThreshold": "품질 차이 체감 안되면 포기"
+      }
+    ],
+    "mondayStartable": true,
+    "cautionNote": "번역 서비스는 사업자등록 필요",
+    "tags": ["번역", "로컬라이징", "LinkedIn", "구독형"]
+  },
+  {
+    "id": "youtube-kr-en-insights-3",
+    "title": "한국 트렌드 → 미국 창업자용 YouTube 자동화 채널",
+    "summary": "매일 60초 분량의 '한국 트렌드 → 미국 비즈니스 인사이트' 숏폼 제작. 페이스리스 음성 + 자막으로 완전 자동화.",
+    "sourceURL": "https://ideaoasis.co.kr/internal-research", 
+    "sourcePlatform": "아이디어오아시스",
+    "timeBudgetHoursPerWeek": 6,
+    "starterCapitalKRW": 2000000,
+    "paybackMonths": 8,
+    "automationPct": 80,
+    "toolStack": ["ElevenLabs", "Runway/Pictory", "Make", "YouTube API"],
+    "weekdayMicrotasks": [
+      "월-금: 한국 뉴스/트렌드 스캔 및 아이디어 메모 (10분)",
+      "매일: 자동 생성된 영상 품질 체크 (10분)"
+    ],
+    "weekendSprint": [
+      "토: 이번주 5개 영상 스크립트 작성 (2시간)",
+      "일: 자동화 워크플로우 개선 (1시간)"
+    ],
+    "firstTenCustomersPlaybook": [
+      {
+        "channel": "YouTube 오가닉 성장",
+        "steps": [
+          "30일 연속 업로드로 1000 구독자 달성", 
+          "스폰서십 및 affiliate 수익 모델 적용",
+          "월 $500+ 목표"
+        ]
+      }
+    ],
+    "validationSteps7Day": [
+      {
+        "day": 2,
+        "task": "자동화 파이프라인 구축",
+        "passFailCriteria": "스크립트 입력하면 완성 영상 자동 생성",
+        "timeRequired": "4시간"
+      },
+      {
+        "day": 7,
+        "task": "첫 주 조회수 확인",
+        "passFailCriteria": "영상당 평균 100뷰 이상",
+        "timeRequired": "30분"
+      }
+    ],
+    "riskKillers": [
+      {
+        "risk": "YouTube 알고리즘 변화",
+        "cheapTest": "다양한 포맷으로 A/B 테스트",
+        "killThreshold": "1개월내 성장세 없으면 포기"
+      }
+    ],
+    "mondayStartable": false,
+    "tags": ["YouTube", "자동화", "숏폼", "한국트렌드"]
+  },
+  {
+    "id": "b2b-website-revamp-4",
+    "title": "로컬 서비스업 전용 웹사이트 일주일 완성 서비스",
+    "summary": "병원, 학원, 세무사 등 로컬 서비스업 대상 웹사이트 리뉴얼. 업종별 템플릿 + AI 콘텐츠로 고정가 150만원, 일주일 완성.",
+    "sourceURL": "https://ideaoasis.co.kr/internal-research",
+    "sourcePlatform": "아이디어오아시스",
+    "timeBudgetHoursPerWeek": 12,
+    "starterCapitalKRW": 8000000,
+    "paybackMonths": 8,
+    "automationPct": 50,
+    "toolStack": ["WordPress", "Elementor", "Claude", "Calendly"],
+    "weekdayMicrotasks": [
+      "월-금: 잠재고객 리서치 및 콜드메일 (20분씩)"
+    ],
+    "weekendSprint": [
+      "토-일: 프로젝트 1-2개 집중 작업 (6시간)"
+    ],
+    "firstTenCustomersPlaybook": [
+      {
+        "channel": "지역 비즈니스 네트워크",
+        "steps": [
+          "동네 상공회의소 가입 및 네트워킹",
+          "무료 웹사이트 진단서비스로 리드 확보",
+          "150만원 패키지 판매"
+        ]
+      }
+    ],
+    "validationSteps7Day": [
+      {
+        "day": 3,
+        "task": "업종별 템플릿 3개 완성",
+        "passFailCriteria": "병원, 학원, 세무사용 각 1개씩",
+        "timeRequired": "6시간"
+      },
+      {
+        "day": 7,
+        "task": "테스트 프로젝트 1건 완료",
+        "passFailCriteria": "실제 고객사이트 런칭까지",
+        "timeRequired": "8시간"
+      }
+    ],
+    "riskKillers": [
+      {
+        "risk": "무료/저가 솔루션과의 경쟁",
+        "cheapTest": "현재 시장 가격 조사 및 차별화 포인트 검증",
+        "killThreshold": "가격 경쟁력 없으면 포기"
+      }
+    ],
+    "mondayStartable": false,
+    "tags": ["웹개발", "로컬비즈니스", "템플릿", "고정가"]
+  },
+  {
+    "id": "amazon-ingredient-bundles-5",
+    "title": "한국→미국 Amazon '성분' 마이크로 번들 (재고없는 시작)",
+    "summary": "한국 특유 성분/제품을 미국 Amazon에서 번들로 판매. 초기엔 affiliate + 가이드북으로 수요 검증 후 재고 진행.",
+    "sourceURL": "https://ideaoasis.co.kr/internal-research",
+    "sourcePlatform": "아이디어오아시스", 
+    "timeBudgetHoursPerWeek": 10,
+    "starterCapitalKRW": 15000000,
+    "paybackMonths": 12,
+    "automationPct": 40,
+    "toolStack": ["Amazon Seller Central", "Jungle Scout", "Helium 10"],
+    "weekdayMicrotasks": [
+      "월-금: 제품 리서치 및 트렌드 분석 (30분씩)"
+    ],
+    "weekendSprint": [
+      "토: 이번주 리서치 정리 및 상품 기획 (3시간)",
+      "일: 마케팅 콘텐츠 제작 (2시간)"  
+    ],
+    "firstTenCustomersPlaybook": [
+      {
+        "channel": "Amazon KDP (가이드북)",
+        "steps": [
+          "'Korean Beauty Ingredients Guide' 가이드북 출간",
+          "49달러 가격으로 수요 검증",
+          "구매자들에게 실제 제품 번들 사전주문"
+        ]
+      }
+    ],
+    "validationSteps7Day": [
+      {
+        "day": 3,
+        "task": "수요 검증용 가이드북 완성",
+        "passFailCriteria": "50페이지 분량의 전문적인 콘텐츠",
+        "timeRequired": "6시간"
+      },
+      {
+        "day": 7,
+        "task": "가이드북 20부 판매",
+        "passFailCriteria": "Amazon KDP에서 실제 매출 발생",
+        "timeRequired": "2시간"
+      }
+    ],
+    "riskKillers": [
+      {
+        "risk": "FDA 규제 및 수입 허가 이슈", 
+        "cheapTest": "변호사 자문 및 유사 케이스 분석",
+        "killThreshold": "법적 리스크 높으면 즉시 포기"
+      }
+    ],
+    "mondayStartable": false,
+    "cautionNote": "FDA 규제 및 수입업 허가 필수 검토",
+    "tags": ["Amazon", "수입", "성분", "번들"]
+  },
+  {
+    "id": "sme-sales-agent-6",
+    "title": "중소기업 WhatsApp/카카오톡 영업 자동화 에이전트",
+    "summary": "B2B 수출업체 대상 고객 문의 자동 응답 + 견적서 생성 서비스. FAQ + 견적 로직을 챗봇으로 반자동화.",
+    "sourceURL": "https://ideaoasis.co.kr/internal-research",
+    "sourcePlatform": "아이디어오아시스",
+    "timeBudgetHoursPerWeek": 8,
+    "starterCapitalKRW": 10000000,
+    "paybackMonths": 10,
+    "automationPct": 60,
+    "toolStack": ["Chatfuel", "Zapier", "Google Sheets", "카카오톡 비즈니스"],
+    "weekdayMicrotasks": [
+      "월-금: 기존 고객 챗봇 성능 모니터링 (15분씩)"
+    ],
+    "weekendSprint": [
+      "토: 신규 고객 챗봇 시나리오 구축 (3시간)",
+      "일: 성과 분석 및 개선방안 도출 (1시간)"
+    ],
+    "firstTenCustomersPlaybook": [
+      {
+        "channel": "중소기업 협회 및 전시회",
+        "steps": [
+          "수출 관련 전시회 참가하여 네트워킹",
+          "무료 챗봇 데모 제공",
+          "월 50만원 리테이너 계약"
+        ]
+      }
+    ],
+    "validationSteps7Day": [
+      {
+        "day": 2,
+        "task": "기본 챗봇 시나리오 완성",
+        "passFailCriteria": "FAQ 10개 + 견적 자동화 플로우",
+        "timeRequired": "4시간"
+      },
+      {
+        "day": 7,
+        "task": "테스트 고객 1곳 확보",
+        "passFailCriteria": "실제 비즈니스에 챗봇 적용",
+        "timeRequired": "3시간"
+      }
+    ],
+    "riskKillers": [
+      {
+        "risk": "기업들의 자동화 도구 도입 저항",
+        "cheapTest": "3일 무료 체험으로 효과 입증",
+        "killThreshold": "체험 후 전환율 20% 미만시 포기"
+      }
+    ],
+    "mondayStartable": true,
+    "tags": ["챗봇", "영업자동화", "B2B", "WhatsApp"]
+  },
+  {
+    "id": "ai-bookkeeping-lite-7",
+    "title": "회계사 파트너십 'AI 간편장부' (소상공인 대상)",
+    "summary": "기존 회계사와 파트너십을 맺고 소상공인 대상 영수증/지출 자동 정리 서비스. 60% 자동화로 월 15만원에 제공.",
+    "sourceURL": "https://ideaoasis.co.kr/internal-research", 
+    "sourcePlatform": "아이디어오아시스",
+    "timeBudgetHoursPerWeek": 8,
+    "starterCapitalKRW": 7000000,
+    "paybackMonths": 10,
+    "automationPct": 60,
+    "toolStack": ["OCR API", "Google Drive", "Notion", "Excel"],
+    "weekdayMicrotasks": [
+      "월-금: 파트너 회계사 관계 관리 (15분씩)"
+    ],
+    "weekendSprint": [
+      "토: 고객 온보딩 및 시스템 셋업 (3시간)",
+      "일: AI 정확도 개선 작업 (2시간)"
+    ],
+    "firstTenCustomersPlaybook": [
+      {
+        "channel": "회계사 파트너십",
+        "steps": [
+          "지역 회계사 3-5곳과 파트너십 체결",
+          "회계사 고객 중 소상공인에게 추천",
+          "월 15만원 × 10명 = 150만원 목표"
+        ]
+      }
+    ],
+    "validationSteps7Day": [
+      {
+        "day": 2,
+        "task": "OCR + 자동분류 시스템 구축",
+        "passFailCriteria": "영수증 스캔 → 자동 장부입력 80% 정확도",
+        "timeRequired": "5시간"
+      },
+      {
+        "day": 5,
+        "task": "파트너 회계사 1곳 확보",
+        "passFailCriteria": "정식 파트너십 계약 체결",
+        "timeRequired": "2시간"
+      },
+      {
+        "day": 7,
+        "task": "테스트 고객 3곳 온보딩",
+        "passFailCriteria": "실제 서비스 이용 시작",
+        "timeRequired": "3시간"
+      }
+    ],
+    "riskKillers": [
+      {
+        "risk": "기존 회계프로그램과의 경쟁",
+        "cheapTest": "현 고객들의 기존 도구 불만사항 조사",
+        "killThreshold": "차별화 포인트 없으면 포기"
+      }
+    ],
+    "mondayStartable": false,
+    "cautionNote": "회계 서비스는 세무사 자격 또는 파트너십 필수",
+    "tags": ["AI", "회계", "소상공인", "파트너십"]
+  }
+]

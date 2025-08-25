@@ -17,39 +17,58 @@ export default function ValueLandingPage() {
       <div className="max-w-4xl mx-auto px-6 py-16">
         
         <div className="text-left max-w-3xl">
+          <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-8">
+            <p className="text-lg text-red-800 font-medium">
+              ⏰ 오늘의 아이디어는 <span className="font-bold">16시간 27분</span> 후 사라집니다
+            </p>
+          </div>
+          
           <h1 className="text-5xl sm:text-7xl font-light text-slate-900 mb-8 leading-none">
-            당신의 회사는<br/>
-            <span className="font-black">당신을 버릴</span><br/>
-            준비를 하고 있습니다.
+            매일 오전 7시,<br/>
+            <span className="font-black">24시간만 공개</span><br/>
+            직장인형 창업 아이디어
           </h1>
           <p className="text-2xl text-slate-700 mb-8 font-light leading-relaxed">
-            작년에 삼성은 3,000명을 정리해고했습니다. 평균 근속 18년.
+            주중 30분 · 주말 3시간으로 시작하는 사이드 창업
           </p>
-          <p className="text-2xl text-slate-700 mb-8 font-light leading-relaxed">
-            그들은 모두 "나는 아니겠지"라고 생각했습니다.
+          <p className="text-xl text-slate-700 mb-8 font-light leading-relaxed">
+            <strong>출근은 계속, 소득원은 추가</strong>
           </p>
-          <p className="text-2xl text-slate-700 mb-12 font-light leading-relaxed">
-            <strong>당신도 그렇게 생각하시나요?</strong>
-          </p>
+          <div className="bg-slate-100 p-6 rounded-lg mb-12">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-slate-900">≤8시간</div>
+                <div className="text-sm text-slate-600">주간 시간 투자</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-slate-900">≤₩15M</div>
+                <div className="text-sm text-slate-600">시작 자본</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-slate-900">≥50%</div>
+                <div className="text-sm text-slate-600">자동화 비율</div>
+              </div>
+            </div>
+          </div>
           
           <div className="border-l-4 border-black pl-8 mb-12">
             <p className="text-xl text-slate-700 mb-4 leading-relaxed">
-              47세 김 부장의 이야기:
+              오늘의 아이디어: B2B KPI 대시보드 서비스
             </p>
             <p className="text-lg text-slate-600 mb-4">
-              20년간 완벽한 평가. 3번의 승진. 본부장 추천.
+              시간 예산: 주 8시간 | 시작 자본: ₩5M | 자동화: 70%
             </p>
             <p className="text-lg text-slate-600 mb-4">
-              그런데 지난달, "구조조정 대상자"라는 통보.
+              툴스택: Make + Google Sheets + Appsheet
             </p>
             <p className="text-lg text-slate-600 mb-4">
-              이유? "젊은 인재 영입을 위한 불가피한 선택."
+              첫 10고객 전략: 오프라인 상점 대상 DM 10건/일
             </p>
             <p className="text-xl text-slate-700 mb-4 leading-relaxed">
-              그는 지금 치킨집을 알아보고 있습니다.
+              검증 기간: 7일 | 목표: 3건 유료 체험 @ ₩200k/월
             </p>
             <p className="text-lg text-slate-600">
-              <strong>당신은 다를까요?</strong>
+              <strong>위에 처럼 자세한 실행 가이드가 매일 오전 7시에.</strong>
             </p>
           </div>
           
@@ -74,74 +93,99 @@ export default function ValueLandingPage() {
         
         <div className="max-w-2xl mb-16">
           <h2 className="text-3xl text-slate-900 mb-8 font-light leading-tight">
-            그런데 희망이 있습니다.
+            매주 7가지 아이디어 유형
           </h2>
-          <p className="text-xl text-slate-700 mb-6">
-            52세 이 과장은 퇴사 후 1인 컨설팅으로 월 2,000만원을 법니다.
-          </p>
-          <p className="text-xl text-slate-700 mb-6">
-            48세 박 차장은 부업으로 시작한 온라인 강의로 연 3억을 벌었습니다.
-          </p>
-          <p className="text-xl text-slate-700 mb-6">
-            45세 최 부장은 회사 경험을 살려 B2B 솔루션을 만들어 엑싯했습니다.
-          </p>
-          <p className="text-2xl text-slate-900 mb-8 font-light">
-            <strong>그들의 공통점? 회사가 자신을 버리기 전에 먼저 준비했습니다.</strong>
-          </p>
-          <p className="text-xl text-slate-700">
-            당신의 20년 경험은 쓸모없지 않습니다.
-          </p>
-          <p className="text-xl text-slate-700 mb-8">
-            단지 어떻게 활용할지 모를 뿐입니다.
+          <div className="space-y-4">
+            <div className="p-4 border-l-4 border-blue-500 bg-blue-50">
+              <div className="font-semibold">B2B 마이크로 SaaS</div>
+              <div className="text-sm text-slate-600">오프라인 업체 대상 업무 자동화</div>
+            </div>
+            <div className="p-4 border-l-4 border-green-500 bg-green-50">
+              <div className="font-semibold">콘텐츠 로컬라이제이션</div>
+              <div className="text-sm text-slate-600">AI + 인간 번역으로 국제 비즈니스 지원</div>
+            </div>
+            <div className="p-4 border-l-4 border-purple-500 bg-purple-50">
+              <div className="font-semibold">웹사이트 템플릿 라이브러리</div>
+              <div className="text-sm text-slate-600">특정 업종 대상 일주일 완성 서비스</div>
+            </div>
+          </div>
+          <p className="text-lg text-slate-700 mt-6">
+            각 유형마다 시간/자본/자동화 분석 + 구체적 실행 가이드 제공
           </p>
         </div>
 
         <div className="border-t-2 border-black pt-12 mb-16">
           <h2 className="text-3xl text-slate-900 mb-8 font-light">
-            선택은 당신의 것입니다.
+            오늘의 아이디어 무료로 받기
           </h2>
-          <p className="text-xl text-slate-700 mb-6">
-            2년 후 치킨집을 차릴 것인가.
-          </p>
-          <p className="text-xl text-slate-700 mb-6">
-            아니면 지금 준비를 시작할 것인가.
-          </p>
-          <div className="mt-12">
-            {user ? (
-              <a 
-                href="/subscribe"
-                className="text-2xl underline text-black hover:no-underline"
-              >
-                매주 실패하지 않는 사업 아이디어 받기 →
-              </a>
-            ) : (
-              <button 
-                onClick={() => signInWithPopup(auth, googleProvider)}
-                className="text-2xl underline text-black hover:no-underline"
-              >
-                매주 실패하지 않는 사업 아이디어 받기 →
-              </button>
-            )}
-            <p className="text-lg text-slate-600 mt-4">
-              매주 목요일. 무료. 언제든 해지 가능.
+          <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg mb-8">
+            <p className="text-lg text-yellow-800 mb-4">
+              ⚠️ <strong>16시간 27분</strong> 후 사라지는 아이디어를 지금 저장하세요
             </p>
+            <div className="space-y-4">
+              {user ? (
+                <div>
+                  <a 
+                    href="/today-idea" 
+                    className="inline-block px-6 py-3 bg-black text-white text-lg font-medium rounded-lg hover:bg-gray-800"
+                  >
+                    오늘의 아이디어 보기 →
+                  </a>
+                  <p className="text-sm text-slate-600 mt-2">
+                    내일 오전 7시에 새로운 아이디어가 도착합니다.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <button 
+                    onClick={() => signInWithPopup(auth, googleProvider)}
+                    className="inline-block px-6 py-3 bg-black text-white text-lg font-medium rounded-lg hover:bg-gray-800"
+                  >
+                    Google로 로그인하고 아이디어 받기 →
+                  </button>
+                  <p className="text-sm text-slate-600 mt-2">
+                    로그인 후 매일 오전 7시 아이디어 알림 받음
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-lg text-slate-600 mb-4">
+              과거 아이디어는 아카이브에서 확인 가능 (유료)
+            </p>
+            <a href="/archive" className="text-lg underline text-slate-700 hover:no-underline">
+              아카이브 보기 (₩29,000/월)
+            </a>
           </div>
         </div>
           
-          <div className="text-center">
-            <a href="/trending" className="text-lg text-slate-600 underline hover:no-underline">
-              성공한 40대들의 실제 사례 보기
-            </a>
+          <div className="text-center space-y-4">
+            <div>
+              <a href="/fit-picks" className="text-lg text-slate-700 underline hover:no-underline mr-6">
+                이번 주 3가지 선별 아이디어
+              </a>
+              <a href="/success-stories" className="text-lg text-slate-600 underline hover:no-underline">
+                40대 성공 사례 보기
+              </a>
+            </div>
+            <p className="text-sm text-slate-500">
+              출근은 계속, 소득원은 추가 - Work-While-You-Build
+            </p>
           </div>
         </div>
 
       <div className="bg-slate-100 py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-lg text-slate-600">
-            우리는 실패 확률 87%인 치킨집 대신, 당신의 경험이 자산이 되는 사업을 찾아드립니다.
+            매일 오전 7시 → 24시간 후 사라짐 → 아카이브로 이동
           </p>
           <p className="text-lg text-slate-600 mt-4">
-            50명의 전문가가 검증한, 한국에서만 가능한 기회들.
+            시간/자본/자동화 구체적 수치 + 7일 검증 가이드 + 첫 10고객 플레이북
+          </p>
+          <p className="text-sm text-slate-500 mt-4">
+            분석마비 금지. 오늘 시작할 수 있는 아이디어만.
           </p>
         </div>
       </div>

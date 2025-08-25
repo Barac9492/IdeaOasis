@@ -2,22 +2,18 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import type { Idea } from '@/lib/types';
+
 interface IdeaCardProps {
-  idea: {
-    id: string;
-    title: string;
-    summary: string;
+  idea: Idea & {
     offer?: string;
     badges?: string[];
-    tags?: string[];
     scorecards?: {
       opportunity?: number;
       problem?: number;
       feasibility?: number;
       whyNow?: number;
     };
-    sourcePlatform?: string;
-    sourceURL?: string;
     koreaFitScore?: number;
     signals?: {
       last7dDelta?: number;
@@ -45,7 +41,7 @@ export default function IdeaCard({
           <Link href={`/idea/${idea.id}`} className="font-semibold text-lg hover:underline">
             {idea.title}
           </Link>
-          <p className="text-sm text-zinc-600 mt-1">{idea.summary}</p>
+          <p className="text-sm text-zinc-600 mt-1">{idea.summary3}</p>
           
           {/* offer 한 줄 */}
           {idea.offer && (
@@ -66,21 +62,73 @@ export default function IdeaCard({
             ))}
           </div>
           
-          {/* 간이 점수 */}
-          {idea.scorecards?.opportunity != null && (
-            <div className="text-xs text-gray-500 mt-1">
-              기회 점수: <span className="font-semibold">{idea.scorecards.opportunity}/10</span>
+          {/* Work-While-You-Build 실행 지표 */}
+          {(idea.timeBudgetHoursPerWeek || idea.starterCapitalKRW || idea.automationPct) && (
+            <div className="bg-slate-50 p-3 rounded-lg mt-3">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                {idea.timeBudgetHoursPerWeek && (
+                  <div>
+                    <div className="text-sm font-semibold text-slate-900">≤{idea.timeBudgetHoursPerWeek}시간</div>
+                    <div className="text-xs text-slate-600">주간 투자</div>
+                  </div>
+                )}
+                {idea.starterCapitalKRW && (
+                  <div>
+                    <div className="text-sm font-semibold text-slate-900">≤₩{(idea.starterCapitalKRW/1000000).toFixed(0)}M</div>
+                    <div className="text-xs text-slate-600">시작 자본</div>
+                  </div>
+                )}
+                {idea.automationPct && (
+                  <div>
+                    <div className="text-sm font-semibold text-slate-900">{idea.automationPct}%</div>
+                    <div className="text-xs text-slate-600">자동화</div>
+                  </div>
+                )}
+              </div>
+              
+              {idea.paybackMonths && (
+                <div className="text-center mt-2">
+                  <span className="text-xs text-slate-600">회수기간: </span>
+                  <span className="text-xs font-semibold">{idea.paybackMonths}개월</span>
+                </div>
+              )}
+              
+              {idea.toolStack && idea.toolStack.length > 0 && (
+                <div className="mt-2">
+                  <div className="text-xs text-slate-600 mb-1">툴스택:</div>
+                  <div className="flex flex-wrap gap-1">
+                    {idea.toolStack.slice(0, 3).map((tool, idx) => (
+                      <span key={idx} className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded">
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {idea.mondayStartable && (
+                <div className="mt-2">
+                  <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                    ✅ 오늘 시작 가능
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {idea.cautionNote && (
+            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
+              ⚠️ {idea.cautionNote}
             </div>
           )}
           
           <div className="text-xs text-zinc-500 mt-2">
-            <span className="mr-2">출처: {idea.sourcePlatform || "-"}</span>
-            {idea.sourceURL && (
-              <a className="underline mr-2" href={idea.sourceURL} target="_blank">
+            <span className="mr-2">출처: {idea.sourceName || "-"}</span>
+            {idea.sourceUrl && (
+              <a className="underline mr-2" href={idea.sourceUrl} target="_blank">
                 원문 보기
               </a>
             )}
-            <span className="mr-2">한국 적합도: {idea.koreaFitScore ?? "-"}/5</span>
             <span>최근 7일 변화: {delta >= 0 ? "+" : ""}{delta}</span>
           </div>
         </div>

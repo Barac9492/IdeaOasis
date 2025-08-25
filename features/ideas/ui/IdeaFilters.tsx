@@ -23,35 +23,35 @@ export default function IdeaFilters({ initialFilters, onFilterChange, totalIdeas
     <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
       <Select value={filters.category} onValueChange={(v) => handleChange('category', v)}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="카테고리" />
+          <SelectValue placeholder="시간 예산" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">모두</SelectItem>
-          <SelectItem value="헬스테크">헬스테크</SelectItem>
-          <SelectItem value="그린테크">그린테크</SelectItem>
-          <SelectItem value="푸드테크">푸드테크</SelectItem>
-          <SelectItem value="펫테크">펫테크</SelectItem>
+          <SelectItem value="">모든 시간</SelectItem>
+          <SelectItem value="time-5">≤5시간/주</SelectItem>
+          <SelectItem value="time-8">≤8시간/주</SelectItem>
+          <SelectItem value="time-12">≤12시간/주</SelectItem>
         </SelectContent>
       </Select>
       <Select value={filters.difficulty} onValueChange={(v) => handleChange('difficulty', v)}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="난이도" />
+          <SelectValue placeholder="시작 자본" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">모두</SelectItem>
-          <SelectItem value="Low">쉬움</SelectItem>
-          <SelectItem value="Medium">중간</SelectItem>
-          <SelectItem value="High">어려움</SelectItem>
+          <SelectItem value="">모든 자본</SelectItem>
+          <SelectItem value="capital-5">≤₩5M</SelectItem>
+          <SelectItem value="capital-15">≤₩15M</SelectItem>
+          <SelectItem value="capital-50">≤₩50M</SelectItem>
         </SelectContent>
       </Select>
       <Select value={filters.access} onValueChange={(v) => handleChange('access', v)}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="접근성" />
+          <SelectValue placeholder="자동화 수준" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">모두</SelectItem>
-          <SelectItem value="public">공개</SelectItem>
-          <SelectItem value="paid">프리미엄</SelectItem>
+          <SelectItem value="">모든 수준</SelectItem>
+          <SelectItem value="automation-50">≥50% 자동화</SelectItem>
+          <SelectItem value="automation-70">≥70% 자동화</SelectItem>
+          <SelectItem value="automation-90">≥90% 자동화</SelectItem>
         </SelectContent>
       </Select>
       <Input
@@ -66,8 +66,9 @@ export default function IdeaFilters({ initialFilters, onFilterChange, totalIdeas
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="latest">최신순</SelectItem>
-          <SelectItem value="popular">인기순</SelectItem>
-          <SelectItem value="opportunity">기회순</SelectItem>
+          <SelectItem value="automation">자동화순</SelectItem>
+          <SelectItem value="payback">회수기간순</SelectItem>
+          <SelectItem value="monday-startable">오늘시작가능</SelectItem>
         </SelectContent>
       </Select>
       <p className="text-sm text-muted-foreground">총 {totalIdeas}개 아이디어</p>

@@ -28,11 +28,26 @@ export async function POST(req: NextRequest) {
     koreaFit: typeof it.koreaFit === 'number' ? it.koreaFit : undefined,
     whyNow: it.whyNow ? it.whyNow.join('\n') : '', // If array in payload
     risks: Array.isArray(it.risks) ? it.risks : (it.risks ? it.risks.split('\n').map((r: string) => r.trim()) : []),
-    // New fields from Figma mock
+    // Legacy fields
     metrics: it.metrics || { marketOpportunity: 0, executionDifficulty: 0, revenuePotential: 0, timingScore: 0, regulatoryRisk: 0 },
     partnershipStrategy: Array.isArray(it.partnershipStrategy) ? it.partnershipStrategy : [],
     trendData: it.trendData || { keyword: '', growth: '', monthlySearches: '' },
     effort: it.effort,
+    
+    // Work-While-You-Build execution fields
+    timeBudgetHoursPerWeek: typeof it.timeBudgetHoursPerWeek === 'number' ? it.timeBudgetHoursPerWeek : undefined,
+    starterCapitalKRW: typeof it.starterCapitalKRW === 'number' ? it.starterCapitalKRW : undefined,
+    paybackMonths: typeof it.paybackMonths === 'number' ? it.paybackMonths : undefined,
+    automationPct: typeof it.automationPct === 'number' ? it.automationPct : undefined,
+    toolStack: Array.isArray(it.toolStack) ? it.toolStack : undefined,
+    weekdayMicrotasks: Array.isArray(it.weekdayMicrotasks) ? it.weekdayMicrotasks : undefined,
+    weekendSprint: Array.isArray(it.weekendSprint) ? it.weekendSprint : undefined,
+    firstTenCustomersPlaybook: Array.isArray(it.firstTenCustomersPlaybook) ? it.firstTenCustomersPlaybook : undefined,
+    validationSteps7Day: Array.isArray(it.validationSteps7Day) ? it.validationSteps7Day : undefined,
+    riskKillers: Array.isArray(it.riskKillers) ? it.riskKillers : undefined,
+    mondayStartable: typeof it.mondayStartable === 'boolean' ? it.mondayStartable : false,
+    cautionNote: it.cautionNote || undefined,
+    
     visible: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

@@ -38,6 +38,33 @@ export interface Idea {
   executionRoadmap?: ExecutionStep[];
   businessModel?: string;
   targetUser?: string;
+  
+  // ===== WORK-WHILE-YOU-BUILD EXECUTION FIELDS =====
+  // Time & Money constraints for 40-50 직장인
+  timeBudgetHoursPerWeek?: number;     // 5 | 8 | 12
+  starterCapitalKRW?: number;          // e.g., 5000000 (5M won)
+  paybackMonths?: number;              // e.g., 6-12 months
+  automationPct?: number;              // 0-100 percentage
+  toolStack?: string[];                // ["Make", "Gemini", "Firebase"]
+  
+  // Weekly execution breakdown
+  weekdayMicrotasks?: string[];        // 5 bullets (≤20min each)
+  weekendSprint?: string[];            // 3-5 bullets (3h total)
+  
+  // Customer acquisition playbook
+  firstTenCustomersPlaybook?: FirstTenCustomersStep[];
+  
+  // 7-day validation gates
+  validationSteps7Day?: ValidationStep[];
+  
+  // Risk management
+  riskKillers?: RiskKiller[];          // top 2 risks to eliminate early
+  
+  // Quick start capability
+  mondayStartable?: boolean;           // can start tonight flag
+  
+  // Light compliance (not regulatory intelligence)
+  cautionNote?: string;                // one-liner warning if needed
 }
 
 // ===== REGULATORY COMPLIANCE TYPES =====
@@ -114,4 +141,25 @@ export interface KoreaFitFactors {
   marketReadiness: number;         // 0-10
   competitiveLandscape: number;    // 0-10
   businessInfrastructure: number;  // 0-10
+}
+
+// ===== WORK-WHILE-YOU-BUILD TYPES =====
+
+export interface FirstTenCustomersStep {
+  channel: string;  // "LinkedIn DM", "Cold Email", "Facebook Groups"
+  steps: string[];  // specific actions/scripts
+  kpiGate?: string; // success metric
+}
+
+export interface ValidationStep {
+  day: number;      // 1-7
+  task: string;     // what to test
+  passFailCriteria: string; // specific metric
+  timeRequired: string; // "30분", "2시간"
+}
+
+export interface RiskKiller {
+  risk: string;     // the risk
+  cheapTest: string; // how to validate/eliminate quickly
+  killThreshold: string; // when to abandon
 }

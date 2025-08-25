@@ -15,7 +15,8 @@ export default function Nav() {
     <nav className="flex items-center justify-between p-4 border-b border-zinc-800">
       <Link href="/" className="font-semibold tracking-wide">아이디어오아시스</Link>
       <div className="flex gap-4 text-sm">
-        <Link href="/top">추천 아이디어</Link>
+        <Link href="/fit-picks">맞춤 아이디어</Link>
+        <Link href="/archive">아카이브</Link>
         <Link href="/admin">관리자</Link>
         {user ? (
           <button onClick={() => signOut(auth)}>로그아웃</button>
