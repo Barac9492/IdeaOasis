@@ -69,19 +69,19 @@ export default function IdeaCard({
           {/* 간이 점수 */}
           {idea.scorecards?.opportunity != null && (
             <div className="text-xs text-gray-500 mt-1">
-              Opportunity: <span className="font-semibold">{idea.scorecards.opportunity}/10</span>
+              기회 점수: <span className="font-semibold">{idea.scorecards.opportunity}/10</span>
             </div>
           )}
           
           <div className="text-xs text-zinc-500 mt-2">
-            <span className="mr-2">Source: {idea.sourcePlatform || "-"}</span>
+            <span className="mr-2">출처: {idea.sourcePlatform || "-"}</span>
             {idea.sourceURL && (
               <a className="underline mr-2" href={idea.sourceURL} target="_blank">
-                원문
+                원문 보기
               </a>
             )}
-            <span className="mr-2">Korea Fit: {idea.koreaFitScore ?? "-"}/5</span>
-            <span>최근7일: {delta >= 0 ? "+" : ""}{delta}</span>
+            <span className="mr-2">한국 적합도: {idea.koreaFitScore ?? "-"}/5</span>
+            <span>최근 7일 변화: {delta >= 0 ? "+" : ""}{delta}</span>
           </div>
         </div>
         
