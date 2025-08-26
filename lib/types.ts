@@ -65,6 +65,9 @@ export interface Idea {
   
   // Light compliance (not regulatory intelligence)
   cautionNote?: string;                // one-liner warning if needed
+  
+  // Confidence building
+  difficultyLevel?: 'beginner' | 'intermediate' | 'advanced';  // 초급/중급/고급
 }
 
 // ===== REGULATORY COMPLIANCE TYPES =====

@@ -38,9 +38,23 @@ export default function IdeaCard({
     <article className={`p-4 border rounded-lg ${className}`}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <Link href={`/idea/${idea.id}`} className="font-semibold text-lg hover:underline">
-            {idea.title}
-          </Link>
+          <div className="flex items-center gap-2 mb-1">
+            <Link href={`/idea/${idea.id}`} className="font-semibold text-lg hover:underline flex-1">
+              {idea.title}
+            </Link>
+            {idea.difficultyLevel && (
+              <span className={`px-2 py-1 text-xs rounded-full ${
+                idea.difficultyLevel === 'beginner' 
+                  ? 'bg-green-100 text-green-800' 
+                  : idea.difficultyLevel === 'intermediate'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {idea.difficultyLevel === 'beginner' ? '초급' 
+                  : idea.difficultyLevel === 'intermediate' ? '중급' : '고급'}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-zinc-600 mt-1">{idea.summary3}</p>
           
           {/* offer 한 줄 */}

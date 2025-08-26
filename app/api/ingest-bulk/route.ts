@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
     riskKillers: Array.isArray(it.riskKillers) ? it.riskKillers : undefined,
     mondayStartable: typeof it.mondayStartable === 'boolean' ? it.mondayStartable : false,
     cautionNote: it.cautionNote || undefined,
+    difficultyLevel: it.difficultyLevel === 'beginner' || it.difficultyLevel === 'intermediate' || it.difficultyLevel === 'advanced' ? it.difficultyLevel : undefined,
     
     visible: true,
     createdAt: new Date().toISOString(),

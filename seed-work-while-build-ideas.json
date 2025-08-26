@@ -72,6 +72,7 @@
       }
     ],
     "mondayStartable": true,
+    "difficultyLevel": "beginner",
     "tags": ["B2B", "대시보드", "소상공인", "자동화"]
   },
   {
@@ -132,6 +133,7 @@
     ],
     "mondayStartable": true,
     "cautionNote": "번역 서비스는 사업자등록 필요",
+    "difficultyLevel": "intermediate",
     "tags": ["번역", "로컬라이징", "LinkedIn", "구독형"]
   },
   {
@@ -185,6 +187,7 @@
       }
     ],
     "mondayStartable": false,
+    "difficultyLevel": "intermediate",
     "tags": ["YouTube", "자동화", "숏폼", "한국트렌드"]
   },
   {
@@ -236,6 +239,7 @@
       }
     ],
     "mondayStartable": false,
+    "difficultyLevel": "advanced",
     "tags": ["웹개발", "로컬비즈니스", "템플릿", "고정가"]
   },
   {
@@ -289,6 +293,7 @@
     ],
     "mondayStartable": false,
     "cautionNote": "FDA 규제 및 수입업 허가 필수 검토",
+    "difficultyLevel": "advanced",
     "tags": ["Amazon", "수입", "성분", "번들"]
   },
   {
@@ -341,6 +346,7 @@
       }
     ],
     "mondayStartable": true,
+    "difficultyLevel": "intermediate",
     "tags": ["챗봇", "영업자동화", "B2B", "WhatsApp"]
   },
   {
@@ -400,6 +406,7 @@
     ],
     "mondayStartable": false,
     "cautionNote": "회계 서비스는 세무사 자격 또는 파트너십 필수",
+    "difficultyLevel": "beginner",
     "tags": ["AI", "회계", "소상공인", "파트너십"]
   }
 ]
