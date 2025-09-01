@@ -39,7 +39,50 @@ export const realBusinessIdeas: Idea[] = [
     visible: true,
     createdAt: '2024-12-16T10:00:00Z',
     votesUp: 0,
-    votesDown: 0
+    votesDown: 0,
+    ideaType: 'weekend',
+    executionMetrics: {
+      activeExecutors: 23,
+      firstRevenueCount: 7,
+      avgTimeToRevenue: 72,
+      totalRevenue: 4200000,
+      failureRate: 15,
+      avgExecutionHours: 8
+    },
+    dataStatus: 'verified',
+    executionPack: {
+      id: 'pack-001',
+      ideaId: 'idea-001',
+      title: 'DNA 영양관리 MVP 런칭 패키지',
+      description: '주말 8시간으로 개인 맞춤형 영양 관리 서비스 MVP를 런칭하는 완벽한 실행 가이드',
+      contents: {
+        sourcing: [
+          'DNA 검사 키트 OEM 업체 3곳 컨택 정보 및 견적',
+          '영양제 공급업체 리스트 (최소 주문량 100개)',
+          '도시락 제조 파트너 5곳 연락처 및 단가표'
+        ],
+        templates: [
+          '영양 분석 랜딩페이지 템플릿 (Framer)',
+          'DNA 검사 동의서 및 개인정보 처리 약관',
+          '구독 서비스 이용약관 및 결제 페이지'
+        ],
+        scripts: [
+          'B2B 기업 복지 담당자 콜드 이메일 스크립트',
+          '네이버 스마트스토어 상품 등록 카피',
+          '인스타그램 광고 3종 세트 (이미지 + 카피)'
+        ],
+        tools: [
+          'Typeform으로 영양 설문 자동화 설정',
+          'Stripe 정기결제 연동 가이드',
+          'Zapier로 주문-배송 자동화 워크플로우'
+        ],
+        budget: '초기 투자금 300만원 (DNA 키트 샘플 50개, 웹사이트 제작, 초기 광고비)',
+        timeline: '1주차: 파트너 확보, 2주차: 웹사이트 제작, 3주차: 테스트 고객 10명 확보, 4주차: 피드백 반영 및 정식 런칭'
+      },
+      estimatedTime: '8시간',
+      expectedRevenue: '월 200-500만원',
+      difficulty: 'medium'
+    }
   },
   {
     id: 'idea-002',
@@ -61,7 +104,50 @@ export const realBusinessIdeas: Idea[] = [
     visible: true,
     createdAt: '2024-12-11T15:00:00Z',
     votesUp: 0,
-    votesDown: 0
+    votesDown: 0,
+    ideaType: 'afterwork',
+    executionMetrics: {
+      activeExecutors: 12,
+      firstRevenueCount: 3,
+      avgTimeToRevenue: 48,
+      totalRevenue: 8500000,
+      failureRate: 25,
+      avgExecutionHours: 3
+    },
+    dataStatus: 'verified',
+    executionPack: {
+      id: 'pack-002',
+      ideaId: 'idea-002',
+      title: '퇴근 후 3시간 ESG 컨설팅 부업',
+      description: '대기업 ESG 담당자들을 위한 간단한 탄소계산 툴을 만들어 컨설팅 부업 시작하기',
+      contents: {
+        sourcing: [
+          'ESG 공시 대행업체 3곳 파트너십 제안',
+          '탄소 배출 계산 API 제공업체 리스트',
+          '중소기업 ESG 담당자 LinkedIn 리스트 500명'
+        ],
+        templates: [
+          'ESG 간편 계산기 노코드 템플릿 (Bubble)',
+          'ESG 컨설팅 제안서 PPT 템플릿',
+          '탄소중립 로드맵 Excel 템플릿'
+        ],
+        scripts: [
+          'ESG 담당자 콜드 메일 스크립트 5종',
+          'LinkedIn 아웃리치 메시지 템플릿',
+          '무료 ESG 진단 웨비나 스크립트'
+        ],
+        tools: [
+          'Tally로 ESG 진단 설문 만들기',
+          'Calendly로 상담 예약 자동화',
+          'Notion으로 고객 관리 시스템 구축'
+        ],
+        budget: '초기 투자금 50만원 (도메인, 호스팅, LinkedIn Premium)',
+        timeline: '1일차: 툴 세팅, 2일차: 첫 10명 아웃리치, 3일차: 무료 상담 진행'
+      },
+      estimatedTime: '3시간',
+      expectedRevenue: '건당 30-50만원',
+      difficulty: 'easy'
+    }
   },
   {
     id: 'idea-003',

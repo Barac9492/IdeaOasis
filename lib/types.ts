@@ -68,6 +68,19 @@ export interface Idea {
   
   // Confidence building
   difficultyLevel?: 'beginner' | 'intermediate' | 'advanced';  // 초급/중급/고급
+  
+  // ===== REAL EXECUTION TRACKING =====
+  executionPack?: ExecutionPack;
+  executionMetrics?: {
+    activeExecutors: number;      // 현재 실행 중인 사용자 수
+    firstRevenueCount: number;    // 첫 매출 달성 사용자 수
+    avgTimeToRevenue: number;     // 첫 매출까지 평균 시간 (시간)
+    totalRevenue: number;         // 총 매출액
+    failureRate: number;          // 실패율 (%)
+    avgExecutionHours: number;    // 평균 실행 시간
+  };
+  dataStatus?: 'unverified' | 'testing' | 'verified';
+  ideaType?: 'afterwork' | 'weekend';  // 퇴근 후 3시간 vs 주말 8시간
 }
 
 // ===== REGULATORY COMPLIANCE TYPES =====
@@ -165,4 +178,44 @@ export interface RiskKiller {
   risk: string;     // the risk
   cheapTest: string; // how to validate/eliminate quickly
   killThreshold: string; // when to abandon
+}
+
+// ===== EXECUTION PACK & INVITATION SYSTEM =====
+
+export interface ExecutionPack {
+  id: string;
+  ideaId: string;
+  title: string;
+  description: string;
+  contents: {
+    sourcing?: string[];      // OEM 소싱 리스트, 공급처 정보
+    templates?: string[];     // 랜딩 페이지, 제안서 템플릿
+    scripts?: string[];       // 세일즈 스크립트, 광고 카피
+    tools?: string[];         // 필요 도구 및 설정 가이드
+    budget?: string;          // 예산 계획
+    timeline?: string;        // 실행 타임라인
+  };
+  estimatedTime: string;      // "3시간", "8시간"
+  expectedRevenue: string;    // "월 200-500만원"
+  difficulty: 'easy' | 'medium' | 'hard';
+}
+
+export interface Invitation {
+  id: string;
+  inviterId: string;
+  inviterEmail: string;
+  inviteeEmail?: string;
+  ideaId: string;
+  status: 'pending' | 'accepted' | 'expired';
+  createdAt: string;
+  acceptedAt?: string;
+  inviteCode: string;
+}
+
+export interface UserUnlock {
+  userId: string;
+  ideaId: string;
+  unlockedAt: string;
+  unlockMethod: 'invitation' | 'premium' | 'seed';
+  invitationId?: string;
 }

@@ -39,6 +39,28 @@ export async function listIdeas(): Promise<Idea[]> {
   return inMemory;
 }
 
+export async function getDailyIdeas(): Promise<Idea[]> {
+  await ensureSeeded();
+  const allIdeas = inMemory.filter(i => i.visible !== false);
+  
+  // Get today's date seed for consistent daily selection
+  const today = new Date().toISOString().split('T')[0];
+  const seed = today.split('-').reduce((acc, val) => acc + parseInt(val), 0);
+  
+  // Pseudo-random selection based on date
+  const shuffled = [...allIdeas].sort((a, b) => {
+    const aHash = a.id.charCodeAt(0) + seed;
+    const bHash = b.id.charCodeAt(0) + seed;
+    return aHash - bHash;
+  });
+  
+  // Get 1 afterwork idea and 1 weekend idea
+  const afterworkIdea = shuffled.find(i => i.ideaType === 'afterwork') || shuffled[0];
+  const weekendIdea = shuffled.find(i => i.ideaType === 'weekend' && i.id !== afterworkIdea?.id) || shuffled[1];
+  
+  return [afterworkIdea, weekendIdea].filter(Boolean).slice(0, 2);
+}
+
 export async function getIdea(id: string): Promise<Idea | null> {
   await ensureSeeded();
   if (!useFirestore) return inMemory.find(i => i.id === id) ?? null;
